@@ -12,6 +12,27 @@
 ; Links ............: GitHub                - https://github.com/DcodingTheWeb/ProxAllium/blob/master/Tor.au3
 ; ===============================================================================================================================
 
+; #CURRENT# =====================================================================================================================
+; _Tor_SetPath - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
+; ===============================================================================================================================
+
 ; #VARIABLES# ===================================================================================================================
 Global $g__sTorPath = "" ; Path to Tor.exe
 ; ===============================================================================================================================
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_SetPath
+; Description ...: Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
+; Syntax ........: _Tor_SetPath($sTorPath)
+; Parameters ....: $sTorPath            - Path of Tor.exe, can be relative or short. See Remarks.
+; Return values .: Success: True
+;                  Failure: False - Fails if the file does not exist.
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: The path will always be converted to a long and absolute path before getting assinged.
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_SetPath($sTorPath)
+	If Not FileExists($sTorPath) Then Return SetError(1, 0, False)
+	$g__sTorPath = FileGetLongName($sTorPath)
+	Return True
+EndFunc
