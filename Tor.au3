@@ -21,6 +21,7 @@
 ; #CONSTANTS# ===================================================================================================================
 Global Const $TOR_ERROR_GENERIC = 1 ; Reserved for generic errors.
 Global Const $TOR_ERROR_PROCESS = 2 ; Error related to Tor.exe's process.
+Global Const $TOR_ERROR_VERSION = 3
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT
 ; ===============================================================================================================================
@@ -57,16 +58,31 @@ EndFunc
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Tor_SetPath
 ; Description ...: Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
-; Syntax ........: _Tor_SetPath($sTorPath)
+; Syntax ........: _Tor_SetPath($sTorPath[, $bVerify = True])
 ; Parameters ....: $sTorPath            - Path of Tor.exe, can be relative or short. See Remarks.
-; Return values .: Success: True
-;                  Failure: False - Fails if the file does not exist.
+;                  $bVerify             - [optional] If set to False, no checkes are performed. Default is True.
+; Return values .: Success: $aTorVersion from _Tor_CheckVersion or True if $bVerify is False.
+;                  Failure: False and @error set to:
+;                           $TOR_ERROR_GENERIC - If $sTorPath does not exist
+;                           $TOR_ERROR_VERSION - If _Tor_CheckVersion failed to check Tor's version, @extended is set to _Tor_CheckVersion's @error.
 ; Author ........: Damon Harris (TheDcoder)
-; Remarks .......: The path will always be converted to a long and absolute path before getting assinged.
+; Remarks .......: 1. The $sTorPath will always be converted to a long and absolute path before getting assinged.
+;                  2. The existing path assigned to Tor.exe will not change if _Tor_SetPath fails
+;                  3. Use $bVerify = False to force the s
 ; Example .......: No
 ; ===============================================================================================================================
-Func _Tor_SetPath($sTorPath)
-	If Not FileExists($sTorPath) Then Return SetError(1, 0, False)
-	$g__sTorPath = FileGetLongName($sTorPath)
-	Return True
+Func _Tor_SetPath($sTorPath, $bVerify = True)
+	If Not $bVerify Then
+		$g__sTorPath = FileGetLongName($sTorPath)
+		Return True
+	EndIf
+	If Not FileExists($sTorPath) Then Return SetError($TOR_ERROR_GENERIC, 0, False)
+	Local $sOldTorPath = $g__sTorPath
+	$g__sTorPath = $sTorPath
+	Local $aTorVersion = _Tor_CheckVersion()
+	If @error Then
+		$g__sTorPath = $sOldTorPath
+		Return SetError($TOR_ERROR_VERSION, @error, False)
+	EndIf
+	Return $aTorVersion
 EndFunc
