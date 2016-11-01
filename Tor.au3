@@ -49,7 +49,7 @@ Global $g__sTorPath = "" ; Path to Tor.exe
 Func _Tor_CheckVersion()
 	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, $g__sTorPath & ' --version')
 	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, "")
-	Local $aTorVersion = StringRegExp($sOutput, '(.\..\..\..) \(git-([a-z0-9]*)\)', $STR_REGEXPARRAYFULLMATCH)
+	Local $aTorVersion = StringRegExp($sOutput, '([0-9]\.[0-9]\.[0-9]\.[0-9]) \(git-([a-z0-9]{16})\)', $STR_REGEXPARRAYFULLMATCH)
 	If @error Then Return SetError($TOR_ERROR_GENERIC, 1, False)
 	Return $aTorVersion
 EndFunc
