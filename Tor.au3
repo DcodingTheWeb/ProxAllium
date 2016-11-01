@@ -41,7 +41,7 @@ Global $g__sTorPath = "" ; Path to Tor.exe
 ;                           $aTorVersion[$TOR_VERSION_GIT]    - Will contain Git's truncated hash of the commit.
 ;                  Failure: False and @error set to:
 ;                           $TOR_ERROR_PROCESS - If it is an invalid Tor path.
-;                           $TOR_ERROR_GENERIC - If it is an invalid Tor executable.
+;                           $TOR_ERROR_VERSION - If unable to determine version, @extended is set to StringRegExp's @error.
 ; Author ........: Damon Harris (TheDcoder)
 ; Remarks .......: $TOR_VERSION Format : x.x.x.x (git-a1b2c3d4e5f6g7h8)
 ;                               Example: 0.2.8.7 (git-263088633a63982a)
@@ -51,7 +51,7 @@ Func _Tor_CheckVersion()
 	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, $g__sTorPath & ' --version')
 	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
 	Local $aTorVersion = StringRegExp($sOutput, '([0-9]\.[0-9]\.[0-9]\.[0-9]) \(git-([a-z0-9]{16})\)', $STR_REGEXPARRAYFULLMATCH)
-	If @error Then Return SetError($TOR_ERROR_GENERIC, 1, False)
+	If @error Then Return SetError($TOR_ERROR_VERSION, @error, False)
 	Return $aTorVersion
 EndFunc
 
