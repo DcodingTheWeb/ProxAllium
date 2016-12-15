@@ -51,7 +51,7 @@ Global $g__sTorPath = "" ; Path to Tor.exe
 ; Example .......: No
 ; ===============================================================================================================================
 Func _Tor_CheckVersion()
-	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT + $PROCESS_DEBUG, $g__sTorPath & ' --version')
+	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, $g__sTorPath & ' --version')
 	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
 	Local $aTorVersion = StringRegExp($sOutput, '([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*) \(git-([a-z0-9]{16})\)', $STR_REGEXPARRAYFULLMATCH)
 	If @error Then Return SetError($TOR_ERROR_VERSION, @error, False)
