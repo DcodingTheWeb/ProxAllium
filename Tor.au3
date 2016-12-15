@@ -16,6 +16,7 @@
 ; #CURRENT# =====================================================================================================================
 ; _Tor_CheckVersion - Check the version of Tor.
 ; _Tor_SetPath      - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
+; _Tor_Start        - Starts Tor
 ; ===============================================================================================================================
 
 ; #CONSTANTS# ===================================================================================================================
@@ -24,6 +25,8 @@ Global Const $TOR_ERROR_PROCESS = 2 ; Error related to Tor.exe's process.
 Global Const $TOR_ERROR_VERSION = 3
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT
+
+Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE ; Associated with $aTorProcess returned by _Tor_Start
 ; ===============================================================================================================================
 
 ; #VARIABLES# ===================================================================================================================
@@ -85,4 +88,25 @@ Func _Tor_SetPath($sTorPath, $bVerify = True)
 		Return SetError($TOR_ERROR_VERSION, @error, False)
 	EndIf
 	Return $aTorVersion
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Start
+; Description ...: Starts Tor
+; Syntax ........: _Tor_Start($sConfig)
+; Parameters ....: $sConfig             - Path to the config/torrc file.
+; Return values .: Success: $aTorProcess, See Remarks.
+;                  Failure: False and @error set to $TOR_ERROR_PROCESS
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: $aTorProcess's Format:
+;                  $aTorProcess[$TOR_PROCESS_HANDLE] - Contains the process handle of tor.exe
+;                  $aTorProcess[$TOR_PROCESS_PID]    - Contains the PID of tor.exe
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Start($sConfig)
+	Local $aTorProcess[2]
+	$aTorProcess[$TOR_PROCESS_HANDLE] = _Process_RunCommand($PROCESS_RUN, '"' & $g__sTorPath & '" --allow-missing-torrc --defaults-torrc "" -f "' & $sConfig & '"', @ScriptDir)
+	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
+	$aTorProcess[$TOR_PROCESS_PID] = @extended
+	Return $aTorProcess
 EndFunc
