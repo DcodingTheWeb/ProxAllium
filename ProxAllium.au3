@@ -47,7 +47,7 @@ WEnd
 #Region GUI Creation
 Func GUI_CreateLogWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
-	Global $g_hLogGUI = GUICreate("ProxAllium", $eiGuiWidth, $eiGuiHeight)
+	Global $g_hLogGUI = GUICreate("ProxAllium", $eiGuiWidth, $eiGuiHeight, Default, Default, $WS_OVERLAPPEDWINDOW)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
 	Global $g_idLogCtrl = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
@@ -61,7 +61,7 @@ EndFunc
 
 Func GUI_CreateTorOutputWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
-	Global $g_hTorGUI = GUICreate("Tor Output", $eiGuiWidth, $eiGuiHeight)
+	Global $g_hTorGUI = GUICreate("Tor Output", $eiGuiWidth, $eiGuiHeight, Default, Default, $WS_OVERLAPPEDWINDOW)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
 	Global $g_idTorOutput = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hTorOutput = GUICtrlGetHandle($g_idTorOutput) ; Get the handle of the Edit control for future use in the Tor Output Handler
