@@ -51,7 +51,7 @@ Func GUI_CreateLogWindow()
 	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
 	Global $g_idLogCtrl = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
-	GUICtrlSetFont($g_idLogCtrl, Default, Default, Default, "Consolas")
+	GUICtrlSetFont($g_idLogCtrl, 9, Default, Default, "Consolas")
 	GUISetState() ; Make the GUI visible
 EndFunc
 
@@ -65,7 +65,7 @@ Func GUI_CreateTorOutputWindow()
 	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
 	Global $g_idTorOutput = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hTorOutput = GUICtrlGetHandle($g_idTorOutput) ; Get the handle of the Edit control for future use in the Tor Output Handler
-	GUICtrlSetFont($g_idTorOutput, Default, Default, Default, "Consolas")
+	GUICtrlSetFont($g_idTorOutput, 9, Default, Default, "Consolas")
 	GUICtrlSetBkColor($g_idTorOutput, $COLOR_BLACK)
 	Local $aGrayCmdColor[3] = [197, 197, 197] ; CMD Text Color's combination in RGB
 	Local Const $iGrayCmdColor = _ColorSetRGB($aGrayCmdColor) ; Get the RGB code of CMD Text Color
