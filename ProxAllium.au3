@@ -7,6 +7,8 @@
 #include <GuiEdit.au3>
 #include "Tor.au3"
 
+Opt("GUIOnEventMode", 1)
+
 GUI_CreateLogWindow()
 GUI_LogOut("Starting ProxAllium... Please wait")
 
@@ -34,10 +36,19 @@ While ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) ; Loop until the Tor exits
 WEnd
 #EndRegion
 
+GUI_LogOut("Tor exited with exit code " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
+GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
+
+While True
+	Sleep(1000)
+WEnd
+
 #Region GUI
+#Region GUI Creation
 Func GUI_CreateLogWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
 	Global $g_hLogGUI = GUICreate("ProxAllium", $eiGuiWidth, $eiGuiHeight)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
 	Global $g_idLogCtrl = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
 	GUICtrlSetFont($g_idLogCtrl, Default, Default, Default, "Consolas")
@@ -51,6 +62,7 @@ EndFunc
 Func GUI_CreateTorOutputWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
 	Global $g_hTorGUI = GUICreate("Tor Output", $eiGuiWidth, $eiGuiHeight)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
 	Global $g_idTorOutput = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hTorOutput = GUICtrlGetHandle($g_idTorOutput) ; Get the handle of the Edit control for future use in the Tor Output Handler
 	GUICtrlSetFont($g_idTorOutput, Default, Default, Default, "Consolas")
@@ -60,4 +72,13 @@ Func GUI_CreateTorOutputWindow()
 	GUICtrlSetColor($g_idTorOutput, $iGrayCmdColor)
 	GUISetState() ; Make the GUI visible
 EndFunc
+#EndRegion
+
+#Region GUI Handlers
+Func GUI_Exit()
+	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
+	GUISetState(@SW_HIDE, $g_hTorGUI)
+	If @GUI_WinHandle = $g_hLogGUI Then Exit
+EndFunc
+#EndRegion
 #EndRegion
