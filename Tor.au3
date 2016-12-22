@@ -22,7 +22,8 @@
 ; #CONSTANTS# ===================================================================================================================
 Global Const $TOR_ERROR_GENERIC = 1 ; Reserved for generic errors.
 Global Const $TOR_ERROR_PROCESS = 2 ; Error related to Tor.exe's process.
-Global Const $TOR_ERROR_VERSION = 3
+Global Const $TOR_ERROR_VERSION = 3 ; Error related to version.
+Global Const $TOR_ERROR_CONFIG = 4 ; Error related to configuration.
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT
 
@@ -109,4 +110,23 @@ Func _Tor_Start($sConfig)
 	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
 	$aTorProcess[$TOR_PROCESS_PID] = @extended
 	Return $aTorProcess
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_VerifyConfig
+; Description ...: Check if the configuration is valid.
+; Syntax ........: _Tor_VerifyConfig($sConfig)
+; Parameters ....: $sConfig             - a Path to the config/torrc file.
+; Return values .: Success: True
+;                  Failure: False and @error set to $TOR_ERROR_CONFIG
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: This function just perfroms a bare-minimum check
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_VerifyConfig($sConfig)
+	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, '"' & $g__sTorPath & '" --verify-config --allow-missing-torrc --defaults-torrc "" -f "' & $sConfig & '"', @ScriptDir)
+	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
+	Local $aOutput = StringSplit(StringStripWS($sOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
+	If $aOutput[$aOutput[0]] = "Configuration was valid" Then Return True
+	Return SetError($TOR_ERROR_CONFIG, 0, False)
 EndFunc
