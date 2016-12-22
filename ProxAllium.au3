@@ -10,7 +10,7 @@
 Opt("GUIOnEventMode", 1)
 
 GUI_CreateLogWindow()
-GUI_LogOut("Starting ProxAllium... Please wait")
+GUI_LogOut("Starting ProxAllium... Please wait :)")
 
 Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 
@@ -19,11 +19,11 @@ Global $g_sTorConfigFile = IniRead($CONFIG_INI, "tor", "config_file", @ScriptDir
 Global $g_iOutputPollInterval = Int(IniRead($CONFIG_INI, "proxallium", "output_poll_interval", "250"))
 
 Global $g_aTorVersion = _Tor_SetPath($g_sTorPath)
-GUI_LogOut("Using Tor " & $g_aTorVersion[$TOR_VERSION] & '.')
+GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 
 GUI_LogOut("Starting Tor...")
 Global $g_aTorProcess = _Tor_Start($g_sTorConfigFile)
-GUI_LogOut("Tor PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
+GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
 #Region Tor Output Handler
 GUI_CreateTorOutputWindow()
@@ -36,7 +36,7 @@ While ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) ; Loop until the Tor exits
 WEnd
 #EndRegion Tor Output Handler
 
-GUI_LogOut("Tor exited with exit code " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
+GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
 
 While True
