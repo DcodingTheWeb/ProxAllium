@@ -34,7 +34,7 @@ While ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) ; Loop until the Tor exits
 	If Not $g_sPartialTorOutput = "" Then _GUICtrlEdit_AppendText($g_hTorOutput, $g_sPartialTorOutput)
 	Sleep($g_iOutputPollInterval) ; Don't kill the CPU
 WEnd
-#EndRegion
+#EndRegion Tor Output Handler
 
 GUI_LogOut("Tor exited with exit code " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
@@ -80,5 +80,5 @@ Func GUI_Exit()
 	GUISetState(@SW_HIDE, $g_hTorGUI)
 	If @GUI_WinHandle = $g_hLogGUI Then Exit
 EndFunc
-#EndRegion
-#EndRegion
+#EndRegion GUI Handlers
+#EndRegion GUI
