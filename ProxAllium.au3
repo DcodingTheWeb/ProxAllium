@@ -49,7 +49,7 @@ GUI_LogOut("Starting ProxAllium... Please wait :)")
 Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 
 Global $g_sTorPath = IniRead($CONFIG_INI, "tor", "path", @ScriptDir & '\Tor\tor.exe')
-Global $g_sTorConfigFile = IniRead($CONFIG_INI, "tor", "config_file", @ScriptDir & '\Tor\config.torrc')
+Global $g_sTorConfigFile = IniRead($CONFIG_INI, "tor", "config_file", @ScriptDir & '\config.torrc')
 Global $g_iOutputPollInterval = Int(IniRead($CONFIG_INI, "proxallium", "output_poll_interval", "250"))
 
 Global $g_aTorVersion = _Tor_SetPath($g_sTorPath)
