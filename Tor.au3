@@ -97,7 +97,7 @@ EndFunc
 ; Syntax ........: _Tor_Start($sConfig)
 ; Parameters ....: $sConfig             - Path to the config/torrc file.
 ; Return values .: Success: $aTorProcess, See Remarks.
-;                  Failure: False and @error set to:
+;                  Failure: $sCommand used to execute Tor and @error set to:
 ;                           $TOR_ERROR_PROCESS - If there was a problem starting the process
 ;                           $TOR_ERROR_CONFIG  - If there was a problem during verification of the $sConfig
 ; Author ........: Damon Harris (TheDcoder)
@@ -110,8 +110,9 @@ Func _Tor_Start($sConfig)
 	_Tor_VerifyConfig($sConfig)
 	If @error Then Return SetError($TOR_ERROR_CONFIG, @error, False)
 	Local $aTorProcess[2]
-	$aTorProcess[$TOR_PROCESS_HANDLE] = _Process_RunCommand($PROCESS_RUN, '"' & $g__sTorPath & '" --allow-missing-torrc --defaults-torrc "" -f "' & $sConfig & '"', @ScriptDir)
-	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
+	Local $sCommand = '"' & $g__sTorPath & '" --allow-missing-torrc --defaults-torrc "" -f "' & $sConfig & '"'
+	$aTorProcess[$TOR_PROCESS_HANDLE] = _Process_RunCommand($PROCESS_RUN, $sCommand, @ScriptDir)
+	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, $sCommand)
 	$aTorProcess[$TOR_PROCESS_PID] = @extended
 	Return $aTorProcess
 EndFunc
