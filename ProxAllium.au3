@@ -71,11 +71,8 @@ WEnd
 #EndRegion Tor Output Handler
 
 GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
-GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
 
-While True
-	Sleep(1000)
-WEnd
+ProxAllium_WaitForExit()
 #EndRegion Main Script
 
 #Region GUI Handlers
@@ -85,3 +82,13 @@ Func GUI_Exit()
 	If @GUI_WinHandle = $g_hLogGUI Then Exit
 EndFunc
 #EndRegion GUI Handlers
+
+#Region Misc. Functions
+Func ProxAllium_WaitForExit()
+	GUI_LogOut("ProxAllium now ready to exit...")
+	GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
+	Do
+		Sleep(1000)
+	Until False
+EndFunc
+#Region Misc. Functions
