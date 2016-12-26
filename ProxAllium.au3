@@ -53,10 +53,24 @@ Global $g_sTorConfigFile = IniRead($CONFIG_INI, "tor", "config_file", @ScriptDir
 Global $g_iOutputPollInterval = Int(IniRead($CONFIG_INI, "proxallium", "output_poll_interval", "250"))
 
 Global $g_aTorVersion = _Tor_SetPath($g_sTorPath)
+Switch @error
+	Case $TOR_ERROR_GENERIC
+		ProxAllium_WaitForExit("Invalid Tor path!")
+
+	Case $TOR_ERROR_VERSION
+		ProxAllium_WaitForExit("Unable to identify Tor's version!")
+EndSwitch
 GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 
 GUI_LogOut("Starting Tor...")
 Global $g_aTorProcess = _Tor_Start($g_sTorConfigFile)
+Switch @error
+	Case $TOR_ERROR_PROCESS
+		ProxAllium_WaitForExit("Unable to start Tor!")
+
+	Case $TOR_ERROR_CONFIG
+		ProxAllium_WaitForExit("Invalid Tor configuration, please check your custom entries.")
+EndSwitch
 GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
 #Region Tor Output Handler
