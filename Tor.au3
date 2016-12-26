@@ -71,8 +71,8 @@ EndFunc
 ;                           $TOR_ERROR_VERSION - If _Tor_CheckVersion failed to check Tor's version, @extended is set to _Tor_CheckVersion's @error.
 ; Author ........: Damon Harris (TheDcoder)
 ; Remarks .......: 1. The $sTorPath will always be converted to a long and absolute path before getting assinged.
-;                  2. The existing path assigned to Tor.exe will not change if _Tor_SetPath fails
-;                  3. Use $bVerify = False to force the s
+;                  2. The existing path assigned to Tor.exe will not change if _Tor_SetPath fails.
+;                  3. Set $bVerify to False to skip the version check, you will never get failure if you use this method.
 ; Example .......: No
 ; ===============================================================================================================================
 Func _Tor_SetPath($sTorPath, $bVerify = True)
