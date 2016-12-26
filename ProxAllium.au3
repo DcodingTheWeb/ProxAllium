@@ -84,7 +84,8 @@ EndFunc
 #EndRegion GUI Handlers
 
 #Region Misc. Functions
-Func ProxAllium_WaitForExit()
+Func ProxAllium_WaitForExit($sLogText = "")
+	If Not $sLogText = "" Then GUI_LogOut($sLogText)
 	GUI_LogOut("ProxAllium now ready to exit...")
 	GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
 	Do
