@@ -48,11 +48,13 @@ EndFunc
 GUI_CreateLogWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
 
+#Region Read Configuration
 Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 
 Global $g_sTorPath = IniRead($CONFIG_INI, "tor", "path", @ScriptDir & '\Tor\tor.exe')
 Global $g_sTorConfigFile = IniRead($CONFIG_INI, "tor", "config_file", @ScriptDir & '\config.torrc')
 Global $g_iOutputPollInterval = Int(IniRead($CONFIG_INI, "proxallium", "output_poll_interval", "250"))
+#Region Read Configuration
 
 Global $g_aTorVersion = _Tor_SetPath($g_sTorPath)
 Switch @error
