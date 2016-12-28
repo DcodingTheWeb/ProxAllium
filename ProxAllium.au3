@@ -10,7 +10,7 @@
 #include "Tor.au3"
 #EndRegion Includes
 
-#Region GUI Creation
+#Region GUI Functions
 Opt("GUIOnEventMode", 1)
 
 Func GUI_CreateLogWindow()
@@ -24,7 +24,9 @@ Func GUI_CreateLogWindow()
 EndFunc
 
 Func GUI_LogOut($sText)
-	_GUICtrlEdit_AppendText($g_hLogCtrl, $sText & @CRLF)
+	$sText &= @CRLF
+	_GUICtrlEdit_AppendText($g_hLogCtrl, $sText)
+	ConsoleWrite($sText)
 EndFunc
 
 Func GUI_CreateTorOutputWindow()
@@ -40,7 +42,7 @@ Func GUI_CreateTorOutputWindow()
 	GUICtrlSetColor($g_idTorOutput, $iGrayCmdColor)
 	GUISetState() ; Make the GUI visible
 EndFunc
-#EndRegion GUI Creation
+#EndRegion GUI Functions
 
 #Region Main Script
 GUI_CreateLogWindow()
