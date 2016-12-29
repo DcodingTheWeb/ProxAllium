@@ -102,9 +102,7 @@ While ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) ; Loop until the Tor exits
 WEnd
 #EndRegion Tor Output Handler
 
-GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
-
-ProxAllium_WaitForExit()
+ProxAllium_WaitForExit("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 #EndRegion Main Script
 
 #Region GUI Handlers
