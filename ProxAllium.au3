@@ -24,8 +24,8 @@ Func GUI_CreateLogWindow()
 	GUISetState() ; Make the GUI visible
 EndFunc
 
-Func GUI_LogOut($sText)
-	$sText &= @CRLF
+Func GUI_LogOut($sText, $bEOL = True)
+	If $bEOL Then $sText &= @CRLF
 	_GUICtrlEdit_AppendText($g_hLogCtrl, $sText)
 	ConsoleWrite($sText)
 EndFunc
