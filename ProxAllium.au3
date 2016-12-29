@@ -55,6 +55,8 @@ Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 Global $g_sTorPath = IniRead($CONFIG_INI, "tor", "path", @ScriptDir & '\Tor\tor.exe')
 Global $g_sTorConfigFile = IniRead($CONFIG_INI, "tor", "config_file", @ScriptDir & '\config.torrc')
 Global $g_sTorDataDirPath = IniRead($CONFIG_INI, "tor", "data_dir", @ScriptDir & '\Tor\data')
+Global $g_sTorGeoIPv4File = IniRead($CONFIG_INI, "tor", "geoip4_file", @ScriptDir & '\Tor\geoip')
+Global $g_sTorGeoIPv6File = IniRead($CONFIG_INI, "tor", "geoip6_file", @ScriptDir & '\Tor\geoip6')
 Global $g_iOutputPollInterval = Int(IniRead($CONFIG_INI, "proxallium", "output_poll_interval", "250"))
 
 Global $g_sTorConfig_Port = IniRead($CONFIG_INI, "tor_config", "port", "9050")
