@@ -64,7 +64,7 @@ Global $g_bTorConfig_OnlyLocalhost = (IniRead($CONFIG_INI, "tor_config", "localh
 #EndRegion Read Configuration
 
 If Not FileExists($g_sTorConfigFile) Then
-	GUI_LogOut("Cannot find Tor configuration file, generating one now...")
+	GUI_LogOut("Cannot find Tor configuration file, generating one now... ", False)
 	ProxAllium_GenTorrc()
 	If @error Then ProxAllium_WaitForExit("Failed to create configuration file!")
 	GUI_LogOut("Successfully generated Tor configuration file!")
@@ -80,7 +80,7 @@ Switch @error
 EndSwitch
 GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 
-GUI_LogOut("Starting Tor...")
+GUI_LogOut("Starting Tor... ", False)
 Global $g_aTorProcess = _Tor_Start($g_sTorConfigFile)
 Switch @error
 	Case $TOR_ERROR_PROCESS
