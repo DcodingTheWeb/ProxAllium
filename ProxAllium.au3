@@ -8,6 +8,7 @@
 #include <FileConstants.au3>
 #include <FontConstants.au3>
 #include <GuiEdit.au3>
+#include <StringConstants.au3>
 #include "Tor.au3"
 #EndRegion Includes
 
@@ -92,12 +93,20 @@ EndSwitch
 GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
 #Region Tor Output Handler
+Global $g_sTorOutputCallbackFunc
+
 GUI_CreateTorOutputWindow()
 
 Global $g_sPartialTorOutput = ""
+Global $g_aPartialTorOutput[0]
 While ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) ; Loop until the Tor exits
 	$g_sPartialTorOutput = StdoutRead($g_aTorProcess[$TOR_PROCESS_PID])
-	If Not $g_sPartialTorOutput = "" Then _GUICtrlEdit_AppendText($g_hTorOutput, $g_sPartialTorOutput)
+	If $g_sPartialTorOutput = "" Then ContinueLoop
+	_GUICtrlEdit_AppendText($g_hTorOutput, $g_sPartialTorOutput)
+	$g_aPartialTorOutput = StringSplit($g_sPartialTorOutput, @CRLF, $STR_ENTIRESPLIT)
+	For $iLine = 1 To $g_aPartialTorOutput[0]
+		Call($g_sTorOutputCallbackFunc, StringSplit($g_aPartialTorOutput[$iLine], ' '))
+	Next
 	Sleep($g_iOutputPollInterval) ; Don't kill the CPU
 WEnd
 #EndRegion Tor Output Handler
