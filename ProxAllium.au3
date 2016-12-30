@@ -2,6 +2,7 @@
 ; THIS PROGRAM IS CURRENTLY AT VERY EARLY STAGES - Not suitable for normal use!
 
 #Region Includes
+#include <Array.au3>
 #include <Color.au3>
 #include <ColorConstants.au3>
 #include <EditConstants.au3>
@@ -97,6 +98,8 @@ Global $g_sTorOutputCallbackFunc
 
 GUI_CreateTorOutputWindow()
 
+$g_sTorOutputCallbackFunc = "ProxAllium_BootstrapHandler"
+
 Global $g_sPartialTorOutput = ""
 Global $g_aPartialTorOutput[0]
 While ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) ; Loop until the Tor exits
@@ -157,5 +160,16 @@ Func ProxAllium_WaitForExit($sLogText = "")
 	Do
 		Sleep(1000)
 	Until False
+EndFunc
+
+Func ProxAllium_BootstrapHandler(ByRef $aTorOutput)
+	If Not ($aTorOutput[0] >= 7 And $aTorOutput[5] = "Bootstrapped") Then Return
+	Local $iPercentage = Int(StringTrimRight($aTorOutput[6], 1))
+	If $iPercentage = 0 Then GUI_LogOut("Trying to build a circuit, please wait...")
+	GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
+	If $iPercentage = 100 Then
+		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
+		$g_sTorOutputCallbackFunc = "" ; Reset the callback function, we don't need this anyomore
+	EndIf
 EndFunc
 #Region Misc. Functions
