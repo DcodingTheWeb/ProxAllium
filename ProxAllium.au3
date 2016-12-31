@@ -23,10 +23,6 @@ Func GUI_CreateLogWindow()
 	Global $g_idLogCtrl = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
 	GUICtrlSetFont($g_idLogCtrl, 9, Default, Default, "Consolas")
-	Local $idDummy = GUICtrlCreateDummy()
-	GUICtrlSetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
-	Local $aGuiAccelKeys[1][2] = [["^t", $idDummy]]
-	GUISetAccelerators($aGuiAccelKeys, $g_hLogCtrl)
 	GUISetState(@SW_SHOW, $g_hLogGUI) ; Make the GUI visible
 EndFunc
 
@@ -51,11 +47,16 @@ Func GUI_CreateTorOutputWindow()
 	GUICtrlSetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
 	Local $aGuiAccelKeys[1][2] = [["^t", $idDummy]]
 	GUISetAccelerators($aGuiAccelKeys, $g_hTorGUI)
+	; Create a Dummy on $g_hLogGUI too
+	GUISwitch($g_hLogGUI)
+	$idDummy = GUICtrlCreateDummy()
+	GUICtrlSetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
+	$aGuiAccelKeys[0][1] = $idDummy
+	GUISetAccelerators($aGuiAccelKeys, $g_hLogGUI)
 EndFunc
 
 Func GUI_ToggleTorOutputWindow()
 	Local Static $bHidden = True
-	ConsoleWrite("Fired" & @CRLF)
 	If $bHidden Then
 		$bHidden = Not (GUISetState(@SW_SHOW, $g_hTorGUI) = 1)
 		Return
@@ -65,6 +66,8 @@ EndFunc
 #EndRegion GUI Functions
 
 #Region Main Script
+Global $g_aTorProcess[2]
+
 GUI_CreateLogWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
 
@@ -100,7 +103,7 @@ EndSwitch
 GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 
 GUI_LogOut("Starting Tor... ", False)
-Global $g_aTorProcess = _Tor_Start($g_sTorConfigFile)
+$g_aTorProcess = _Tor_Start($g_sTorConfigFile)
 Switch @error
 	Case $TOR_ERROR_PROCESS
 		ProxAllium_WaitForExit("Unable to start Tor!")
