@@ -157,11 +157,11 @@ EndFunc
 Func GUI_ToggleTorOutputWindow()
 	Local Static $bHidden = True
 	If $bHidden Then
-		$bHidden = Not (GUISetState(@SW_SHOW, $g_hTorGUI) = 1)
+		$bHidden = Not (GUISetState(@SW_SHOWNORMAL, $g_hTorGUI) = 1)
 		If Not $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Hide Tor Output")
 		Return
 	EndIf
-	$bHidden = (GUISetState(@SW_SHOWNORMAL, $g_hTorGUI) = 1)
+	$bHidden = (GUISetState(@SW_HIDE, $g_hTorGUI) = 1)
 	If $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
 EndFunc
 
