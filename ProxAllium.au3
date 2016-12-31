@@ -55,8 +55,12 @@ EndFunc
 
 Func GUI_ToggleTorOutputWindow()
 	Local Static $bHidden = True
-	If $bHidden Then Return GUISetState(@SW_SHOW, $g_hTorGUI)
-	Return GUISetState(@SW_HIDE, $g_hTorGUI)
+	ConsoleWrite("Fired" & @CRLF)
+	If $bHidden Then
+		$bHidden = Not (GUISetState(@SW_SHOW, $g_hTorGUI) = 1)
+		Return
+	EndIf
+	$bHidden = (GUISetState(@SW_HIDE, $g_hTorGUI) = 1)
 EndFunc
 #EndRegion GUI Functions
 
