@@ -24,10 +24,10 @@ Func GUI_CreateLogWindow()
 	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
 	GUICtrlSetFont($g_idLogCtrl, 9, Default, Default, "Consolas")
 	Local $idDummy = GUICtrlCreateDummy()
-	GUISetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
-	Local $aGuiAccelKeys[1][2] = [["^!t", $idDummy]]
+	GUICtrlSetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
+	Local $aGuiAccelKeys[1][2] = [["^t", $idDummy]]
 	GUISetAccelerators($aGuiAccelKeys, $g_hLogCtrl)
-	GUISetState() ; Make the GUI visible
+	GUISetState(@SW_SHOW, $g_hLogGUI) ; Make the GUI visible
 EndFunc
 
 Func GUI_LogOut($sText, $bEOL = True)
@@ -48,8 +48,8 @@ Func GUI_CreateTorOutputWindow()
 	Local Const $iGrayCmdColor = _ColorSetRGB($aGrayCmdColor) ; Get the RGB code of CMD Text Color
 	GUICtrlSetColor($g_idTorOutput, $iGrayCmdColor)
 	Local $idDummy = GUICtrlCreateDummy()
-	GUISetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
-	Local $aGuiAccelKeys[1][2] = [["^!t", $idDummy]]
+	GUICtrlSetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
+	Local $aGuiAccelKeys[1][2] = [["^t", $idDummy]]
 	GUISetAccelerators($aGuiAccelKeys, $g_hTorGUI)
 EndFunc
 
