@@ -23,6 +23,10 @@ Func GUI_CreateLogWindow()
 	Global $g_idLogCtrl = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
 	GUICtrlSetFont($g_idLogCtrl, 9, Default, Default, "Consolas")
+	Local $idDummy = GUICtrlCreateDummy()
+	GUISetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
+	Local $aGuiAccelKeys[1][2] = [["^!t", $idDummy]]
+	GUISetAccelerators($aGuiAccelKeys, $g_hLogCtrl)
 	GUISetState() ; Make the GUI visible
 EndFunc
 
@@ -43,7 +47,16 @@ Func GUI_CreateTorOutputWindow()
 	Local $aGrayCmdColor[3] = [197, 197, 197] ; CMD Text Color's combination in RGB
 	Local Const $iGrayCmdColor = _ColorSetRGB($aGrayCmdColor) ; Get the RGB code of CMD Text Color
 	GUICtrlSetColor($g_idTorOutput, $iGrayCmdColor)
-	GUISetState() ; Make the GUI visible
+	Local $idDummy = GUICtrlCreateDummy()
+	GUISetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
+	Local $aGuiAccelKeys[1][2] = [["^!t", $idDummy]]
+	GUISetAccelerators($aGuiAccelKeys, $g_hTorGUI)
+EndFunc
+
+Func GUI_ToggleTorOutputWindow()
+	Local Static $bHidden = True
+	If $bHidden Then Return GUISetState(@SW_SHOW, $g_hTorGUI)
+	Return GUISetState(@SW_HIDE, $g_hTorGUI)
 EndFunc
 #EndRegion GUI Functions
 
