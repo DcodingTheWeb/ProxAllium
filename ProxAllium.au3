@@ -1,6 +1,8 @@
 ; USE THIS PROGRAM AT YOUR OWN RISK
 ; THIS PROGRAM IS CURRENTLY AT VERY EARLY STAGES - Not suitable for normal use!
 
+#NoTrayIcon
+
 #Region Includes
 #include <Array.au3>
 #include <Color.au3>
@@ -10,8 +12,23 @@
 #include <FontConstants.au3>
 #include <GuiEdit.au3>
 #include <StringConstants.au3>
+#include <TrayConstants.au3>
 #include "Tor.au3"
 #EndRegion Includes
+
+#Region Tray Creation
+Opt("TrayMenuMode", 1 + 2) ; No default menu and automatic checkmarks
+Opt("TrayOnEventMode", 1) ; OnEvent mode
+Opt("TrayAutoPause", 0) ; No Auto-Pause
+
+TrayItemSetState(TrayCreateItem("ProxAllium"), $TRAY_DISABLE)
+TrayCreateItem("")
+Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
+TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
+TrayCreateItem("")
+TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_Exit")
+TraySetState($TRAY_ICONSTATE_SHOW)
+#EndRegion Tray Creation
 
 #Region GUI Functions
 Opt("GUIOnEventMode", 1)
@@ -59,9 +76,11 @@ Func GUI_ToggleTorOutputWindow()
 	Local Static $bHidden = True
 	If $bHidden Then
 		$bHidden = Not (GUISetState(@SW_SHOW, $g_hTorGUI) = 1)
+		If Not $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Hide Tor Output")
 		Return
 	EndIf
 	$bHidden = (GUISetState(@SW_HIDE, $g_hTorGUI) = 1)
+	If $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
 EndFunc
 #EndRegion GUI Functions
 
