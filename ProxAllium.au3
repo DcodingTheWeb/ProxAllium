@@ -21,6 +21,9 @@ Opt("TrayMenuMode", 1 + 2) ; No default menu and automatic checkmarks
 Opt("TrayOnEventMode", 1) ; OnEvent mode
 Opt("TrayAutoPause", 0) ; No Auto-Pause
 
+TraySetClick(16) ; Will display the menu when releasing the secondary mouse button
+TraySetOnEvent($TRAY_EVENT_PRIMARYDOWN, "GUI_ToggleLogWindow")
+
 TrayItemSetState(TrayCreateItem("ProxAllium"), $TRAY_DISABLE)
 TrayCreateItem("")
 Global $g_idTrayLogToggle = TrayCreateItem("Hide Log Window")
