@@ -159,8 +159,19 @@ Func GUI_ToggleTorOutputWindow()
 		If Not $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Hide Tor Output")
 		Return
 	EndIf
-	$bHidden = (GUISetState(@SW_HIDE, $g_hTorGUI) = 1)
+	$bHidden = (GUISetState(@SW_SHOWNORMAL, $g_hTorGUI) = 1)
 	If $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
+EndFunc
+
+Func GUI_ToggleLogWindow()
+	Local Static $bHidden = False
+	If $bHidden Then
+		$bHidden = Not (GUISetState(@SW_SHOWNORMAL, $g_hLogGUI) = 1)
+		If Not $bHidden Then TrayItemSetText($g_idTrayLogToggle, "Hide Log Window")
+		Return
+	EndIf
+	$bHidden = (GUISetState(@SW_HIDE, $g_hLogGUI) = 1)
+	If $bHidden Then TrayItemSetText($g_idTrayLogToggle, "Show Log Window")
 EndFunc
 #EndRegion GUI Handlers
 
