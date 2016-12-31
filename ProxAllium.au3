@@ -226,6 +226,12 @@ Func ProxAllium_BootstrapHandler(ByRef $aTorOutput)
 	GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
 	If $iPercentage = 100 Then
 		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
+		GUI_LogOut('##################################################')
+		GUI_LogOut("# You can now connect to the Tor proxy hosted at:")
+		GUI_LogOut("# IP Address: 127.0.0.1")
+		GUI_LogOut("# Port      : " & $g_sTorConfig_Port)
+		GUI_LogOut("# Proxy Type: SOCKS5")
+		GUI_LogOut('##################################################')
 		$g_sTorOutputCallbackFunc = "" ; Reset the callback function, we don't need this anyomore
 	EndIf
 EndFunc
