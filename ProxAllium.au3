@@ -71,17 +71,6 @@ Func GUI_CreateTorOutputWindow()
 	$aGuiAccelKeys[0][1] = $idDummy
 	GUISetAccelerators($aGuiAccelKeys, $g_hLogGUI)
 EndFunc
-
-Func GUI_ToggleTorOutputWindow()
-	Local Static $bHidden = True
-	If $bHidden Then
-		$bHidden = Not (GUISetState(@SW_SHOW, $g_hTorGUI) = 1)
-		If Not $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Hide Tor Output")
-		Return
-	EndIf
-	$bHidden = (GUISetState(@SW_HIDE, $g_hTorGUI) = 1)
-	If $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
-EndFunc
 #EndRegion GUI Functions
 
 #Region Main Script
@@ -161,6 +150,17 @@ Func GUI_Exit()
 	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
 	GUISetState(@SW_HIDE, $g_hTorGUI)
 	If @GUI_WinHandle = $g_hLogGUI Then Exit
+EndFunc
+
+Func GUI_ToggleTorOutputWindow()
+	Local Static $bHidden = True
+	If $bHidden Then
+		$bHidden = Not (GUISetState(@SW_SHOW, $g_hTorGUI) = 1)
+		If Not $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Hide Tor Output")
+		Return
+	EndIf
+	$bHidden = (GUISetState(@SW_HIDE, $g_hTorGUI) = 1)
+	If $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
 EndFunc
 #EndRegion GUI Handlers
 
