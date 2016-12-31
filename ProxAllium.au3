@@ -23,6 +23,8 @@ Opt("TrayAutoPause", 0) ; No Auto-Pause
 
 TrayItemSetState(TrayCreateItem("ProxAllium"), $TRAY_DISABLE)
 TrayCreateItem("")
+Global $g_idTrayLogToggle = TrayCreateItem("Hide Log Window")
+TrayItemSetOnEvent($g_idTrayLogToggle, "GUI_ToggleLogWindow")
 Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
 TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
 TrayCreateItem("")
