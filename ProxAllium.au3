@@ -3,6 +3,16 @@
 
 #NoTrayIcon
 
+#Region AutoIt3Wrapper Directives
+#AutoIt3Wrapper_Outfile=Builds\ProxAllium.exe
+#AutoIt3Wrapper_UseUpx=y
+#AutoIt3Wrapper_Res_Description=Tor Proxy Bundle for Windows
+#AutoIt3Wrapper_Res_Fileversion=0.1.0.0
+#AutoIt3Wrapper_Res_LegalCopyright=Dcoding The Web
+#AutoIt3Wrapper_Run_Au3Stripper=y
+#Au3Stripper_Parameters=/sf /sv /mo /rm
+#EndRegion AutoIt3Wrapper Directives
+
 #Region Includes
 #include <Array.au3>
 #include <Color.au3>
