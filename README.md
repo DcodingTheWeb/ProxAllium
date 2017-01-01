@@ -10,4 +10,4 @@ It is not a replacement for the `TBB`, ProxAllium does not come with any browser
 Expect a pre-release soon, hold your breath until then! **Please remember that ProxAllium is not stable, use it at your own risk!**
 
 ## Where can I find the main developer?
-You can find me (TheDcoder) at the [Dcoding The Web's Forum](http://forum.dcodingtheweb.com) or at [#DTW in freenode](http://forum.dcodingtheweb.com/showthread.php?tid=8&pid=24#pid24) ([Webchat is avaible too!](https://kiwiirc.com/client/chat.freenode.net:+7000/?nick=DTW_WebchatUser?#DTW)).
+You can find me ([TheDcoder](https://github.com/TheDcoder)) at the [Dcoding The Web's Forum](http://forum.dcodingtheweb.com) or at [#DTW in freenode](http://forum.dcodingtheweb.com/showthread.php?tid=8&pid=24#pid24) ([Webchat is avaible too!](https://kiwiirc.com/client/chat.freenode.net:+7000/?nick=DTW_WebchatUser?#DTW)).
