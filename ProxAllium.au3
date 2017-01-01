@@ -21,6 +21,7 @@
 #include <FileConstants.au3>
 #include <FontConstants.au3>
 #include <GuiEdit.au3>
+#include <MsgBoxConstants.au3>
 #include <StringConstants.au3>
 #include <TrayConstants.au3>
 #include "Tor.au3"
@@ -41,7 +42,7 @@ TrayItemSetOnEvent($g_idTrayLogToggle, "GUI_ToggleLogWindow")
 Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
 TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
 TrayCreateItem("")
-TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_Exit")
+TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_LogWindowExit")
 TraySetState($TRAY_ICONSTATE_SHOW)
 #EndRegion Tray Creation
 
@@ -51,7 +52,7 @@ Opt("GUIOnEventMode", 1)
 Func GUI_CreateLogWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
 	Global $g_hLogGUI = GUICreate("ProxAllium", $eiGuiWidth, $eiGuiHeight, Default, Default, $WS_OVERLAPPEDWINDOW)
-	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
+	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_LogWindowExit")
 	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleLogWindow")
 	Global $g_idLogCtrl = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
@@ -68,7 +69,7 @@ EndFunc
 Func GUI_CreateTorOutputWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
 	Global $g_hTorGUI = GUICreate("Tor Output", $eiGuiWidth, $eiGuiHeight, Default, Default, $WS_OVERLAPPEDWINDOW)
-	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_Exit")
+	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_TorWindowExit")
 	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleTorOutputWindow")
 	Global $g_idTorOutput = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hTorOutput = GUICtrlGetHandle($g_idTorOutput) ; Get the handle of the Edit control for future use in the Tor Output Handler
@@ -163,10 +164,16 @@ ProxAllium_WaitForExit("Tor exited with exit code: " & _Process_GetExitCode($g_a
 #EndRegion Main Script
 
 #Region GUI Handlers
-Func GUI_Exit()
+Func GUI_LogWindowExit()
+	Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Exit", "Do you really want to close ProxAllium?", $g_hLogGUI)
+	If $iButtonID = $IDYES Then Exit
+EndFunc
+
+Func GUI_TorWindowExit()
+	Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Exit", "Do you really want to close Tor?", $g_hTorGUI)
+	If $iButtonID = $IDNO Then Return
 	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
-	GUISetState(@SW_HIDE, $g_hTorGUI)
-	If @GUI_WinHandle = $g_hLogGUI Then Exit
+	GUI_ToggleTorOutputWindow()
 EndFunc
 
 Func GUI_ToggleTorOutputWindow()
