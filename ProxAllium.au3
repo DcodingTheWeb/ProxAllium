@@ -157,7 +157,7 @@ While $g_bTorAlive ; Loop until Tor is dead
 	$g_sPartialTorOutput = StdoutRead($g_aTorProcess[$TOR_PROCESS_PID])
 	If $g_sPartialTorOutput = "" Then ContinueLoop
 	_GUICtrlEdit_AppendText($g_hTorOutput, $g_sPartialTorOutput)
-	$g_aPartialTorOutput = StringSplit($g_sPartialTorOutput, @CRLF, $STR_ENTIRESPLIT)
+	$g_aPartialTorOutput = StringSplit(StringStripWS($g_sPartialTorOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
 	For $iLine = 1 To $g_aPartialTorOutput[0]
 		Call($g_sTorOutputCallbackFunc, StringSplit($g_aPartialTorOutput[$iLine], ' '))
 	Next
