@@ -150,8 +150,10 @@ $g_sTorOutputCallbackFunc = "ProxAllium_BootstrapHandler"
 
 Global $g_sPartialTorOutput = ""
 Global $g_aPartialTorOutput[0]
-While ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) ; Loop until the Tor exits
+Global $g_bTorAlive = True
+While $g_bTorAlive ; Loop until Tor is dead
 	Sleep($g_iOutputPollInterval) ; Don't kill the CPU
+	$g_bTorAlive = Not (ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) = 0) ; Check if Tor still exists
 	$g_sPartialTorOutput = StdoutRead($g_aTorProcess[$TOR_PROCESS_PID])
 	If $g_sPartialTorOutput = "" Then ContinueLoop
 	_GUICtrlEdit_AppendText($g_hTorOutput, $g_sPartialTorOutput)
