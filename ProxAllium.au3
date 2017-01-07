@@ -124,10 +124,7 @@ If Not FileExists($g_sTorConfigFile) Then
 EndIf
 
 Tor_Initialize()
-If Not @error Then
-	Tor_Start()
-	Handle_TorOutput()
-EndIf
+If Not @error Then Tor_Start()
 
 Core_Idle()
 #EndRegion Main Script
@@ -292,6 +289,7 @@ Func Tor_Initialize()
 		Case $TOR_ERROR_VERSION
 			GUI_LogOut("Unable to identify Tor's version!")
 	EndSwitch
+	Handle_TorOutput()
 EndFunc
 
 Func Tor_Start()
