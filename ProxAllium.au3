@@ -48,8 +48,11 @@ TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_LogWindowExit")
 TraySetState($TRAY_ICONSTATE_SHOW)
 #EndRegion Tray Creation
 
-#Region GUI Functions
+#Region GUI Creation Functions
 Opt("GUIOnEventMode", 1)
+GUI_CreateLogWindow()
+GUI_LogOut("Starting ProxAllium... Please wait :)")
+GUI_CreateTorOutputWindow()
 
 Func GUI_CreateLogWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
@@ -99,10 +102,6 @@ Global $g_aTorVersion[0]
 #EndRegion Variable Initialization
 
 #Region Main Script
-GUI_CreateLogWindow()
-GUI_LogOut("Starting ProxAllium... Please wait :)")
-GUI_CreateTorOutputWindow()
-
 #Region Read Configuration
 Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 
