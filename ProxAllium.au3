@@ -127,7 +127,6 @@ Tor_Initialize()
 If Not @error Then
 	Tor_Start()
 	Handle_TorOutput()
-	GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 EndIf
 
 Core_Idle()
@@ -194,6 +193,7 @@ Func Handle_TorOutput()
 			Next
 		Next
 	WEnd
+	GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 EndFunc
 
 Func Handle_WarningAndError(ByRef $aTorOutput)
