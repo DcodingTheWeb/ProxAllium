@@ -134,7 +134,7 @@ Core_Idle()
 Func GUI_LogWindowExit()
 	Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Exit", "Do you really want to close ProxAllium?", $g_hLogGUI)
 	If $iButtonID = $IDYES Then
-		ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
+		Tor_Stop()
 		Exit
 	EndIf
 EndFunc
@@ -144,7 +144,7 @@ Func GUI_TorWindowExit()
 		Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Close Tor?", "Do you really want to close Tor?", $g_hTorGUI)
 		If $iButtonID = $IDNO Then Return
 	EndIf
-	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
+	Tor_Stop()
 	GUI_ToggleTorOutputWindow()
 EndFunc
 
@@ -303,6 +303,13 @@ Func Tor_Start()
 		Case $TOR_ERROR_CONFIG
 			GUI_LogOut("Invalid Tor configuration, please check your custom entries.")
 	EndSwitch
+EndFunc
+
+Func Tor_Stop()
+	GUI_LogOut("Trying to stop Tor... ", False)
+	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
+	If @error Then Return GUI_LogOut("Failed to stop Tor (Error Code: " & @error & ')')
+	GUI_LogOut("Successfully stopped Tor!")
 EndFunc
 #EndRegion Tor Functions
 #EndRegion Functions
