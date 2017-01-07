@@ -285,7 +285,7 @@ Func Tor_Initialize()
 	$g_aTorVersion = _Tor_SetPath($g_sTorPath)
 	Switch @error
 		Case $TOR_ERROR_GENERIC
-			GUI_LogOut("Invalid Tor path!")
+			GUI_LogOut("Cannot find Tor!")
 
 		Case $TOR_ERROR_VERSION
 			GUI_LogOut("Unable to identify Tor's version!")
