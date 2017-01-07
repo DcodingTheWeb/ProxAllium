@@ -219,7 +219,7 @@ EndFunc
 
 Func Handler_Bootstrap(ByRef $aTorOutput)
 	If Not ($aTorOutput[0] >= 7 And $aTorOutput[5] = "Bootstrapped") Then Return
-	Local $iPercentage = Int(StringTrimRight($aTorOutput[6], 1))
+	Local $iPercentage = Int($aTorOutput[6])
 	If $iPercentage = 0 Then GUI_LogOut("Trying to build a circuit, please wait...")
 	GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
 	If $iPercentage = 100 Then
