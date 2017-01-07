@@ -124,11 +124,12 @@ If Not FileExists($g_sTorConfigFile) Then
 EndIf
 
 Tor_Initialize()
-Tor_Start()
+If Not @error Then
+	Tor_Start()
+	Handle_TorOutput()
+	GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
+EndIf
 
-Handle_TorOutput()
-
-GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 Core_Idle()
 #EndRegion Main Script
 
@@ -282,6 +283,8 @@ EndFunc
 #Region Tor Functions
 Func Tor_Initialize()
 	$g_aTorVersion = _Tor_SetPath($g_sTorPath)
+	If Not @error Then Return GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
+	SetError(@error)
 	Switch @error
 		Case $TOR_ERROR_GENERIC
 			GUI_LogOut("Cannot find Tor!")
@@ -289,7 +292,6 @@ Func Tor_Initialize()
 		Case $TOR_ERROR_VERSION
 			GUI_LogOut("Unable to identify Tor's version!")
 	EndSwitch
-	GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 EndFunc
 
 Func Tor_Start()
