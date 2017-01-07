@@ -131,7 +131,7 @@ Switch @error
 EndSwitch
 GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 
-Core_StartTor()
+Tor_Start()
 
 Handle_TorOutput()
 
@@ -284,8 +284,10 @@ Func Core_GenTorrc()
 	FileSetEnd($hTorrc)
 	FileClose($hTorrc)
 EndFunc
+#EndRegion Core Functions
 
-Func Core_StartTor()
+#Region Tor Functions
+Func Tor_Start()
 	GUI_LogOut("Starting Tor... ", False)
 	$g_aTorProcess = _Tor_Start($g_sTorConfigFile)
 	If Not @error Then Return GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
@@ -297,5 +299,5 @@ Func Core_StartTor()
 			GUI_LogOut("Invalid Tor configuration, please check your custom entries.")
 	EndSwitch
 EndFunc
-#EndRegion Core Functions
+#EndRegion Tor Functions
 #EndRegion Functions
