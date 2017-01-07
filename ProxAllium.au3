@@ -239,6 +239,10 @@ Func Core_WaitForExit($sLogText = "")
 	If Not $sLogText = "" Then GUI_LogOut($sLogText)
 	GUI_LogOut("ProxAllium now ready to exit...")
 	GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
+	Core_Idle()
+EndFunc
+
+Func Core_Idle()
 	Do
 		Sleep(1000)
 	Until False
