@@ -142,7 +142,7 @@ EndSwitch
 GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
 #Region Tor Output Handler
-Global $g_aTorOutputCallbackFuncs = [1, "ProxAllium_BootstrapHandler"]
+Global $g_aTorOutputCallbackFuncs = [2, "ProxAllium_BootstrapHandler", "ProxAllium_WarningAndErrorHandler"]
 
 GUI_CreateTorOutputWindow()
 
@@ -271,6 +271,13 @@ Func ProxAllium_BootstrapHandler(ByRef $aTorOutput)
 		GUI_LogOut("# Port      : " & $g_sTorConfig_Port)
 		GUI_LogOut("# Proxy Type: SOCKS5")
 		GUI_LogOut('##################################################')
+	EndIf
+EndFunc
+
+Func ProxAllium_WarningAndErrorHandler(ByRef $aTorOutput)
+	If ($aTorOutput[4] = '[warn]') Or ($aTorOutput[3] = '[err]') Then
+		If $aTorOutput[5] = "Path" Then Return
+		GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
 	EndIf
 EndFunc
 #Region Misc. Functions
