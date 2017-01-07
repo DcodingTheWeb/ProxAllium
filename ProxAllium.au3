@@ -142,11 +142,9 @@ EndSwitch
 GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
 #Region Tor Output Handler
-Global $g_sTorOutputCallbackFunc
+Global $g_aTorOutputCallbackFuncs = [1, "ProxAllium_BootstrapHandler"]
 
 GUI_CreateTorOutputWindow()
-
-$g_sTorOutputCallbackFunc = "ProxAllium_BootstrapHandler"
 
 Global $g_sPartialTorOutput = ""
 Global $g_aPartialTorOutput[0]
@@ -159,7 +157,9 @@ While $g_bTorAlive ; Loop until Tor is dead
 	_GUICtrlEdit_AppendText($g_hTorOutput, $g_sPartialTorOutput)
 	$g_aPartialTorOutput = StringSplit(StringStripWS($g_sPartialTorOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
 	For $iLine = 1 To $g_aPartialTorOutput[0]
-		Call($g_sTorOutputCallbackFunc, StringSplit($g_aPartialTorOutput[$iLine], ' '))
+		For $iCallBackFunc = 1 To $g_aTorOutputCallbackFuncs[0]
+			Call($g_aTorOutputCallbackFuncs[$iCallBackFunc], StringSplit($g_aPartialTorOutput[$iLine], ' '))
+		Next
 	Next
 WEnd
 #EndRegion Tor Output Handler
@@ -271,7 +271,6 @@ Func ProxAllium_BootstrapHandler(ByRef $aTorOutput)
 		GUI_LogOut("# Port      : " & $g_sTorConfig_Port)
 		GUI_LogOut("# Proxy Type: SOCKS5")
 		GUI_LogOut('##################################################')
-		$g_sTorOutputCallbackFunc = "" ; Reset the callback function, we don't need this anyomore
 	EndIf
 EndFunc
 #Region Misc. Functions
