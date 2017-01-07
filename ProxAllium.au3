@@ -98,6 +98,7 @@ Global $g_aTorProcess[2]
 
 GUI_CreateLogWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
+GUI_CreateTorOutputWindow()
 
 #Region Read Configuration
 Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
@@ -141,28 +142,7 @@ Switch @error
 EndSwitch
 GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
-#Region Tor Output Handler
-Global $g_aTorOutputCallbackFuncs = [2, "Handler_Bootstrap", "Handler_WarningAndError"]
-
-GUI_CreateTorOutputWindow()
-
-Global $g_sPartialTorOutput = ""
-Global $g_aPartialTorOutput[0]
-Global $g_bTorAlive = True
-While $g_bTorAlive ; Loop until Tor is dead
-	Sleep($g_iOutputPollInterval) ; Don't kill the CPU
-	$g_bTorAlive = Not (ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) = 0) ; Check if Tor still exists
-	$g_sPartialTorOutput = StdoutRead($g_aTorProcess[$TOR_PROCESS_PID])
-	If $g_sPartialTorOutput = "" Then ContinueLoop
-	_GUICtrlEdit_AppendText($g_hTorOutput, $g_sPartialTorOutput)
-	$g_aPartialTorOutput = StringSplit(StringStripWS($g_sPartialTorOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
-	For $iLine = 1 To $g_aPartialTorOutput[0]
-		For $iCallBackFunc = 1 To $g_aTorOutputCallbackFuncs[0]
-			Call($g_aTorOutputCallbackFuncs[$iCallBackFunc], StringSplit($g_aPartialTorOutput[$iLine], ' '))
-		Next
-	Next
-WEnd
-#EndRegion Tor Output Handler
+Handler_TorOutput()
 
 Core_WaitForExit("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 #EndRegion Main Script
@@ -210,6 +190,26 @@ EndFunc
 #EndRegion GUI Handlers
 
 #Region Event Handler Functions
+Func Handler_TorOutput()
+	Local $aTorOutputCallbackFuncs = [2, "Handler_Bootstrap", "Handler_WarningAndError"]
+	Local $sPartialTorOutput = ""
+	Local $aPartialTorOutput[0]
+	Local $bTorAlive = True
+	While $bTorAlive ; Loop until Tor is dead
+		Sleep($g_iOutputPollInterval) ; Don't kill the CPU
+		$bTorAlive = Not (ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) = 0) ; Check if Tor still exists
+		$sPartialTorOutput = StdoutRead($g_aTorProcess[$TOR_PROCESS_PID])
+		If $sPartialTorOutput = "" Then ContinueLoop
+		_GUICtrlEdit_AppendText($g_hTorOutput, $sPartialTorOutput)
+		$aPartialTorOutput = StringSplit(StringStripWS($sPartialTorOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
+		For $iLine = 1 To $aPartialTorOutput[0]
+			For $iCallBackFunc = 1 To $aTorOutputCallbackFuncs[0]
+				Call($aTorOutputCallbackFuncs[$iCallBackFunc], StringSplit($aPartialTorOutput[$iLine], ' '))
+			Next
+		Next
+	WEnd
+EndFunc
+
 Func Handler_WarningAndError(ByRef $aTorOutput)
 	If ($aTorOutput[4] = '[warn]') Or ($aTorOutput[3] = '[err]') Then
 		If $aTorOutput[5] = "Path" Then Return
