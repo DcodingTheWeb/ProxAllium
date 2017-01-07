@@ -142,7 +142,7 @@ Switch @error
 EndSwitch
 GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
-Handler_TorOutput()
+Handle_TorOutput()
 
 Core_WaitForExit("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 #EndRegion Main Script
@@ -190,8 +190,8 @@ EndFunc
 #EndRegion GUI Handlers
 
 #Region Event Handler Functions
-Func Handler_TorOutput()
-	Local $aTorOutputCallbackFuncs = [2, "Handler_Bootstrap", "Handler_WarningAndError"]
+Func Handle_TorOutput()
+	Local $aTorOutputCallbackFuncs = [2, "Handle_Bootstrap", "Handle_WarningAndError"]
 	Local $sPartialTorOutput = ""
 	Local $aPartialTorOutput[0]
 	Local $bTorAlive = True
@@ -210,14 +210,14 @@ Func Handler_TorOutput()
 	WEnd
 EndFunc
 
-Func Handler_WarningAndError(ByRef $aTorOutput)
+Func Handle_WarningAndError(ByRef $aTorOutput)
 	If ($aTorOutput[4] = '[warn]') Or ($aTorOutput[3] = '[err]') Then
 		If $aTorOutput[5] = "Path" Then Return
 		GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
 	EndIf
 EndFunc
 
-Func Handler_Bootstrap(ByRef $aTorOutput)
+Func Handle_Bootstrap(ByRef $aTorOutput)
 	If Not ($aTorOutput[0] >= 7 And $aTorOutput[5] = "Bootstrapped") Then Return
 	Local $iPercentage = Int($aTorOutput[6])
 	If $iPercentage = 0 Then GUI_LogOut("Trying to build a circuit, please wait...")
