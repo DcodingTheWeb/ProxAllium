@@ -93,10 +93,12 @@ Func GUI_CreateTorOutputWindow()
 EndFunc
 #EndRegion GUI Functions
 
-#Region Main Script
+#Region Variable Initialization
 Global $g_aTorProcess[2]
 Global $g_aTorVersion[0]
+#EndRegion Variable Initialization
 
+#Region Main Script
 GUI_CreateLogWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
 GUI_CreateTorOutputWindow()
