@@ -170,7 +170,10 @@ ProxAllium_WaitForExit("Tor exited with exit code: " & _Process_GetExitCode($g_a
 #Region GUI Handlers
 Func GUI_LogWindowExit()
 	Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Exit", "Do you really want to close ProxAllium?", $g_hLogGUI)
-	If $iButtonID = $IDYES Then Exit
+	If $iButtonID = $IDYES Then
+		ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
+		Exit
+	EndIf
 EndFunc
 
 Func GUI_TorWindowExit()
