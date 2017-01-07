@@ -95,6 +95,7 @@ EndFunc
 
 #Region Main Script
 Global $g_aTorProcess[2]
+Global $g_aTorVersion[0]
 
 GUI_CreateLogWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
@@ -121,16 +122,7 @@ If Not FileExists($g_sTorConfigFile) Then
 	GUI_LogOut("Successfully generated Tor configuration file!")
 EndIf
 
-Global $g_aTorVersion = _Tor_SetPath($g_sTorPath)
-Switch @error
-	Case $TOR_ERROR_GENERIC
-		Core_WaitForExit("Invalid Tor path!")
-
-	Case $TOR_ERROR_VERSION
-		Core_WaitForExit("Unable to identify Tor's version!")
-EndSwitch
-GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
-
+Tor_Initialize()
 Tor_Start()
 
 Handle_TorOutput()
@@ -287,6 +279,18 @@ EndFunc
 #EndRegion Core Functions
 
 #Region Tor Functions
+Func Tor_Initialize()
+	$g_aTorVersion = _Tor_SetPath($g_sTorPath)
+	Switch @error
+		Case $TOR_ERROR_GENERIC
+			GUI_LogOut("Invalid Tor path!")
+
+		Case $TOR_ERROR_VERSION
+			GUI_LogOut("Unable to identify Tor's version!")
+	EndSwitch
+	GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
+EndFunc
+
 Func Tor_Start()
 	GUI_LogOut("Starting Tor... ", False)
 	$g_aTorProcess = _Tor_Start($g_sTorConfigFile)
