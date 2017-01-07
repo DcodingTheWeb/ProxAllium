@@ -115,18 +115,18 @@ Global $g_bTorConfig_OnlyLocalhost = (IniRead($CONFIG_INI, "tor_config", "localh
 
 If Not FileExists($g_sTorConfigFile) Then
 	GUI_LogOut("Cannot find Tor configuration file, generating one now... ", False)
-	ProxAllium_GenTorrc()
-	If @error Then ProxAllium_WaitForExit("Failed to create configuration file!")
+	Core_GenTorrc()
+	If @error Then Core_WaitForExit("Failed to create configuration file!")
 	GUI_LogOut("Successfully generated Tor configuration file!")
 EndIf
 
 Global $g_aTorVersion = _Tor_SetPath($g_sTorPath)
 Switch @error
 	Case $TOR_ERROR_GENERIC
-		ProxAllium_WaitForExit("Invalid Tor path!")
+		Core_WaitForExit("Invalid Tor path!")
 
 	Case $TOR_ERROR_VERSION
-		ProxAllium_WaitForExit("Unable to identify Tor's version!")
+		Core_WaitForExit("Unable to identify Tor's version!")
 EndSwitch
 GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 
@@ -134,15 +134,15 @@ GUI_LogOut("Starting Tor... ", False)
 $g_aTorProcess = _Tor_Start($g_sTorConfigFile)
 Switch @error
 	Case $TOR_ERROR_PROCESS
-		ProxAllium_WaitForExit("Unable to start Tor!")
+		Core_WaitForExit("Unable to start Tor!")
 
 	Case $TOR_ERROR_CONFIG
-		ProxAllium_WaitForExit("Invalid Tor configuration, please check your custom entries.")
+		Core_WaitForExit("Invalid Tor configuration, please check your custom entries.")
 EndSwitch
 GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 
 #Region Tor Output Handler
-Global $g_aTorOutputCallbackFuncs = [2, "ProxAllium_BootstrapHandler", "ProxAllium_WarningAndErrorHandler"]
+Global $g_aTorOutputCallbackFuncs = [2, "Handler_Bootstrap", "Handler_WarningAndError"]
 
 GUI_CreateTorOutputWindow()
 
@@ -164,10 +164,11 @@ While $g_bTorAlive ; Loop until Tor is dead
 WEnd
 #EndRegion Tor Output Handler
 
-ProxAllium_WaitForExit("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
+Core_WaitForExit("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 #EndRegion Main Script
 
-#Region GUI Handlers
+#Region Functions
+#Region GUI Handlers Functions
 Func GUI_LogWindowExit()
 	Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Exit", "Do you really want to close ProxAllium?", $g_hLogGUI)
 	If $iButtonID = $IDYES Then
@@ -208,8 +209,42 @@ Func GUI_ToggleLogWindow()
 EndFunc
 #EndRegion GUI Handlers
 
-#Region Misc. Functions
-Func ProxAllium_GenTorrc()
+#Region Event Handler Functions
+Func Handler_WarningAndError(ByRef $aTorOutput)
+	If ($aTorOutput[4] = '[warn]') Or ($aTorOutput[3] = '[err]') Then
+		If $aTorOutput[5] = "Path" Then Return
+		GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
+	EndIf
+EndFunc
+
+Func Handler_Bootstrap(ByRef $aTorOutput)
+	If Not ($aTorOutput[0] >= 7 And $aTorOutput[5] = "Bootstrapped") Then Return
+	Local $iPercentage = Int(StringTrimRight($aTorOutput[6], 1))
+	If $iPercentage = 0 Then GUI_LogOut("Trying to build a circuit, please wait...")
+	GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
+	If $iPercentage = 100 Then
+		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
+		GUI_LogOut('##################################################')
+		GUI_LogOut("# You can now connect to the Tor proxy hosted at:")
+		GUI_LogOut("# IP Address: 127.0.0.1")
+		GUI_LogOut("# Port      : " & $g_sTorConfig_Port)
+		GUI_LogOut("# Proxy Type: SOCKS5")
+		GUI_LogOut('##################################################')
+	EndIf
+EndFunc
+#EndRegion Misc. Functions
+
+#Region Core Functions
+Func Core_WaitForExit($sLogText = "")
+	If Not $sLogText = "" Then GUI_LogOut($sLogText)
+	GUI_LogOut("ProxAllium now ready to exit...")
+	GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
+	Do
+		Sleep(1000)
+	Until False
+EndFunc
+
+Func Core_GenTorrc()
 	Local $hTorrc = FileOpen($g_sTorConfigFile, $FO_APPEND + $FO_CREATEPATH)
 	If @error Then Return SetError(1, 0, False)
 	FileSetPos($hTorrc, 0, $FILE_BEGIN)
@@ -253,36 +288,5 @@ Func ProxAllium_GenTorrc()
 	FileSetEnd($hTorrc)
 	FileClose($hTorrc)
 EndFunc
-
-Func ProxAllium_WaitForExit($sLogText = "")
-	If Not $sLogText = "" Then GUI_LogOut($sLogText)
-	GUI_LogOut("ProxAllium now ready to exit...")
-	GUI_LogOut("Close the window by clicking X to exit ProxAllium!")
-	Do
-		Sleep(1000)
-	Until False
-EndFunc
-
-Func ProxAllium_BootstrapHandler(ByRef $aTorOutput)
-	If Not ($aTorOutput[0] >= 7 And $aTorOutput[5] = "Bootstrapped") Then Return
-	Local $iPercentage = Int(StringTrimRight($aTorOutput[6], 1))
-	If $iPercentage = 0 Then GUI_LogOut("Trying to build a circuit, please wait...")
-	GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
-	If $iPercentage = 100 Then
-		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
-		GUI_LogOut('##################################################')
-		GUI_LogOut("# You can now connect to the Tor proxy hosted at:")
-		GUI_LogOut("# IP Address: 127.0.0.1")
-		GUI_LogOut("# Port      : " & $g_sTorConfig_Port)
-		GUI_LogOut("# Proxy Type: SOCKS5")
-		GUI_LogOut('##################################################')
-	EndIf
-EndFunc
-
-Func ProxAllium_WarningAndErrorHandler(ByRef $aTorOutput)
-	If ($aTorOutput[4] = '[warn]') Or ($aTorOutput[3] = '[err]') Then
-		If $aTorOutput[5] = "Path" Then Return
-		GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
-	EndIf
-EndFunc
-#Region Misc. Functions
+#EndRegion Core Functions
+#EndRegion Functions
