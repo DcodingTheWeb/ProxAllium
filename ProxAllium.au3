@@ -289,20 +289,22 @@ Func Tor_Initialize()
 		Case $TOR_ERROR_VERSION
 			GUI_LogOut("Unable to identify Tor's version!")
 	EndSwitch
-	Handle_TorOutput()
 EndFunc
 
 Func Tor_Start()
 	GUI_LogOut("Starting Tor... ", False)
 	$g_aTorProcess = _Tor_Start($g_sTorConfigFile)
-	If Not @error Then Return GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
-	Switch @error
-		Case $TOR_ERROR_PROCESS
-			GUI_LogOut("Unable to start Tor!")
+	If @error Then
+		Switch @error
+			Case $TOR_ERROR_PROCESS
+				GUI_LogOut("Unable to start Tor!")
 
-		Case $TOR_ERROR_CONFIG
-			GUI_LogOut("Invalid Tor configuration, please check your custom entries.")
-	EndSwitch
+			Case $TOR_ERROR_CONFIG
+				GUI_LogOut("Invalid Tor configuration, please check your custom entries.")
+		EndSwitch
+	EndIf
+	GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
+	Handle_TorOutput()
 EndFunc
 
 Func Tor_Stop()
