@@ -296,6 +296,7 @@ Func Tor_Start()
 	GUI_LogOut("Starting Tor... ", False)
 	$g_aTorProcess = _Tor_Start($g_sTorConfigFile)
 	If @error Then
+		Local $iError = @error
 		Switch @error
 			Case $TOR_ERROR_PROCESS
 				GUI_LogOut("Unable to start Tor!")
@@ -303,16 +304,25 @@ Func Tor_Start()
 			Case $TOR_ERROR_CONFIG
 				GUI_LogOut("Invalid Tor configuration, please check your custom entries.")
 		EndSwitch
+		Return SetError($iError, 0, False)
 	EndIf
 	GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 	Handle_TorOutput()
+	Return True
 EndFunc
 
 Func Tor_Stop()
 	GUI_LogOut("Trying to stop Tor... ", False)
 	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
-	If @error Then Return GUI_LogOut("Failed to stop Tor (Error Code: " & @error & ')')
+	If @error Then
+		Local $iError = @error
+		GUI_LogOut("Failed to stop Tor (Error Code: " & @error & ')')
+		Return SetError($iError, 0, False)
+	EndIf
+	$g_aTorProcess[$TOR_PROCESS_PID] = 0
 	GUI_LogOut("Successfully stopped Tor!")
+	Return True
+EndFunc
 EndFunc
 #EndRegion Tor Functions
 #EndRegion Functions
