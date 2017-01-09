@@ -227,7 +227,8 @@ EndFunc
 
 Func Core_Idle()
 	Do
-		Sleep(1000)
+		If ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) Then Handle_TorOutput()
+		Sleep($g_iOutputPollInterval)
 	Until False
 EndFunc
 
