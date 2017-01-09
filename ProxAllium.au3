@@ -307,7 +307,6 @@ Func Tor_Start()
 		Return SetError($iError, 0, False)
 	EndIf
 	GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
-	Handle_TorOutput()
 	Return True
 EndFunc
 
