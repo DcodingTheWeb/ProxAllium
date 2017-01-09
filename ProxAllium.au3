@@ -44,6 +44,9 @@ TrayItemSetOnEvent($g_idTrayLogToggle, "GUI_ToggleLogWindow")
 Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
 TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
 TrayCreateItem("")
+Global $g_idTrayToggleTor = TrayCreateItem("Stop Tor")
+TrayItemSetOnEvent($g_idTrayToggleTor, "Tor_Toggle")
+TrayCreateItem("")
 TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_LogWindowExit")
 TraySetState($TRAY_ICONSTATE_SHOW)
 #EndRegion Tray Creation
@@ -322,6 +325,18 @@ Func Tor_Stop()
 	GUI_LogOut("Successfully stopped Tor!")
 	Return True
 EndFunc
+
+Func Tor_Toggle()
+	Local Static $bTorAlive = True
+	If $bTorAlive Then
+		$bTorAlive = Not Tor_Stop()
+		If Not @error Then TrayItemSetText($g_idTrayToggleTor, "Start Tor")
+	Else
+		$bTorAlive = Tor_Start()
+		If Not @error Then
+			TrayItemSetText($g_idTrayToggleTor, "Stop Tor")
+		EndIf
+	EndIf
 EndFunc
 #EndRegion Tor Functions
 #EndRegion Functions
