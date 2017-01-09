@@ -193,6 +193,7 @@ Func Handle_TorOutput()
 			Next
 		Next
 	WEnd
+	$g_aTorProcess[$TOR_PROCESS_PID] = 0
 	GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
 EndFunc
 
@@ -230,7 +231,7 @@ EndFunc
 
 Func Core_Idle()
 	Do
-		If ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) Then Handle_TorOutput()
+		If Not ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) = 0 Then Handle_TorOutput()
 		Sleep($g_iOutputPollInterval)
 	Until False
 EndFunc
@@ -321,7 +322,6 @@ Func Tor_Stop()
 		GUI_LogOut("Failed to stop Tor (Error Code: " & @error & ')')
 		Return SetError($iError, 0, False)
 	EndIf
-	$g_aTorProcess[$TOR_PROCESS_PID] = 0
 	GUI_LogOut("Successfully stopped Tor!")
 	Return True
 EndFunc
