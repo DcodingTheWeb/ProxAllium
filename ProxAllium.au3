@@ -52,7 +52,7 @@ TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_LogWindowExit")
 TraySetState($TRAY_ICONSTATE_SHOW)
 #EndRegion Tray Creation
 
-#Region GUI Creation Functions
+#Region GUI Creation
 Opt("GUIOnEventMode", 1)
 GUI_CreateLogWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
