@@ -118,6 +118,12 @@ Global $g_iOutputPollInterval = Int(IniReadWrite($CONFIG_INI, "proxallium", "out
 
 Global $g_sTorConfig_Port = IniReadWrite($CONFIG_INI, "tor_config", "port", "9050")
 Global $g_bTorConfig_OnlyLocalhost = (IniReadWrite($CONFIG_INI, "tor_config", "localhost_only", "true") = "true")
+
+Global $g_sTorConfig_ProxyType = IniRead($CONFIG_INI, "proxy", "type", "")
+Global $g_sTorConfig_ProxyHost = IniRead($CONFIG_INI, "proxy", "host", "")
+Global $g_sTorConfig_ProxyPort = IniRead($CONFIG_INI, "proxy", "port", "")
+Global $g_sTorConfig_ProxyUser = IniRead($CONFIG_INI, "proxy", "user", "")
+Global $g_sTorConfig_ProxyPass = IniRead($CONFIG_INI, "proxy", "pass", "")
 #EndRegion Read Configuration
 
 If Not FileExists($g_sTorConfigFile) Then
@@ -272,6 +278,40 @@ Func Core_GenTorrc()
 	FileWriteLine($hTorrc, '## Data Directory')
 	FileWriteLine($hTorrc, 'DataDirectory ' & $g_sTorDataDirPath)
 	FileWriteLine($hTorrc, "")
+	If Not $g_sTorConfig_ProxyType = "" Then
+		FileWriteLine($hTorrc, "## Proxy Settings for Tor (not Tor's proxy settings)")
+		Local $sProxySettings
+		Switch $g_sTorConfig_ProxyType
+			Case "http"
+				$sProxySettings &= "HTTPProxy " & $g_sTorConfig_ProxyHost
+				$sProxySettings &= ($g_sTorConfig_ProxyPort = "") ? "" : (':' & $g_sTorConfig_ProxyPort)
+				$sProxySettings &= @CRLF
+				If Not $g_sTorConfig_ProxyUser = "" Then $sProxySettings &= "HTTPProxyAuthenticator " & $g_sTorConfig_ProxyUser & ':' & $g_sTorConfig_ProxyPass & @CRLF
+
+			Case "https"
+				$sProxySettings &= "HTTPSProxy " & $g_sTorConfig_ProxyHost
+				$sProxySettings &= ($g_sTorConfig_ProxyPort = "") ? "" : (':' & $g_sTorConfig_ProxyPort)
+				$sProxySettings &= @CRLF
+				If Not $g_sTorConfig_ProxyUser = "" Then $sProxySettings &= "HTTPSProxyAuthenticator " & $g_sTorConfig_ProxyUser & ':' & $g_sTorConfig_ProxyPass & @CRLF
+
+			Case "socks4"
+				$sProxySettings &= "Socks4Proxy " & $g_sTorConfig_ProxyHost
+				$sProxySettings &= ($g_sTorConfig_ProxyPort = "") ? "" : (':' & $g_sTorConfig_ProxyPort)
+				$sProxySettings &= @CRLF
+
+			Case "socks5"
+				$sProxySettings &= "Socks5Proxy " & $g_sTorConfig_ProxyHost
+				$sProxySettings &= ($g_sTorConfig_ProxyPort = "") ? "" : (':' & $g_sTorConfig_ProxyPort)
+				$sProxySettings &= @CRLF
+				If Not $g_sTorConfig_ProxyUser = "" Then $sProxySettings &= "Socks5ProxyUsername " & $g_sTorConfig_ProxyUser & @CRLF
+				If Not $g_sTorConfig_ProxyPass = "" Then $sProxySettings &= "Socks5ProxyPassword " & $g_sTorConfig_ProxyPass & @CRLF
+
+			Case Else
+				$sProxySettings &= '## Unknown proxy type detected!? Cannot generate config :('
+		EndSwitch
+		FileWriteLine($hTorrc, $sProxySettings)
+		FileWriteLine($hTorrc, "")
+	EndIf
 	FileWriteLine($hTorrc, '###########################################################')
 	FileWriteLine($hTorrc, '###### STORE YOUR CUSTOM CONFIGURATION ENTRIES BELOW ######')
 	FileWriteLine($hTorrc, '##### THEY WILL BE PRESERVED ACROSS CHANGES IN CONFIG #####')
