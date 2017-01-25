@@ -3,3 +3,14 @@
 :toc:
 
 == FAQ
+=== What does it do?
+ProxAllium's goal is to make using https://www.torproject.org/about/overview.html.en[Tor] (Not to be confused with https://www.torproject.org/projects/torbrowser.html.en[Tor Browser]) easier for normal everyday users to circumvent censorship and be anonymous while using internet-based (up to some extent). It's basically a wrapper for Tor, except that it tries to be more than that.
+
+=== How is it different from Tor Browser (Bundle)?
+It is not a replacement for the `TBB`, ProxAllium does not come with any browser! You should configure your own browser to work with `Tor` (yes, `Tor` because ProxAllium is just a "wrapper", remember?). Don't worry because it's really easy! You just have to use the proxy created by `Tor`. The method for using the proxy created by Tor is the same as using a traditional  https://en.wikipedia.org/wiki/SOCKS[SOCKS proxy].
+
+=== Where do I download ProxAllium?
+You can find the 7-zip packages at the https://github.com/DcodingTheWeb/ProxAllium/releases[Releases] page
+
+=== I have a question, where can I ask?
+You can ask your questions at the http://forum.dcodingtheweb.com[Dcoding The Web's Forum] or at http://forum.dcodingtheweb.com/showthread.php?tid=8&pid=24#pid24[#DTW in freenode] (https://kiwiirc.com/client/chat.freenode.net:+7000/?nick=ProxAlliumGuest?#DTW[Webchat is available too!]).
