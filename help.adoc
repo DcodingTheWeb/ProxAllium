@@ -1,1 +1,2 @@
 = Documentation for ProxAllium
+:doctype: book
