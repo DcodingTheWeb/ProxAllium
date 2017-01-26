@@ -1,5 +1,6 @@
 = Documentation for ProxAllium
 :doctype: book
+:nofooter:
 :toc:
 
 == FAQ
