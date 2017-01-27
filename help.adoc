@@ -1,7 +1,7 @@
 = Documentation for ProxAllium
 :doctype: book
 :nofooter:
-:toc:
+:toc: left
 
 == Introduction
 ProxAllium is a wrapper for Tor which makes it *easier* to use without messing with anything! Just run ProxAllium and now you have a working Tor circuit for you to use!
