@@ -4,7 +4,6 @@
 :toc:
 
 == Mailing List (Email Updates)
-
 Now you can get e-mail notifications for new releases and updates from https://listengine.tuxfamily.org/proxallium.tuxfamily.org/news/[ProxAllium's Mailing List]!
 
 === Subscribing
