@@ -3,6 +3,20 @@
 :nofooter:
 :toc:
 
+== Mailing List (Email Updates)
+
+Now you can get e-mail notifications for new releases and updates from https://listengine.tuxfamily.org/proxallium.tuxfamily.org/news/[ProxAllium's Mailing List]!
+
+=== Subscribing
+To subscribe, send a mail with `subscribe` as the subject to `news-request@proxallium.tuxfamily.org`, then reply to the confirmation mail sent by `listmaster@tuxfamily.org`. If for some reason you are not able to subscribe, you can https://github.com/DcodingTheWeb/ProxAllium/wiki/FAQ#i-have-a-question-where-can-i-ask[contact me] asking to add your e-mail to the mailing list... I won't bite by the way!
+
+=== Precautions and Information
+. Your Email is **private** and is **not distributed** to anyone!
+. You will receive emails updates from `mailman@proxallium.tuxfamily.org`, so make sure that it is in your whitelist/address book/contacts. You don't want to find those important notifications in your spam folder!
+. **Do no reply to email notifications**! They will not reach anyone, the mailing list only accepts emails from administrators
+. To unsubscribe, just follow the same procedure as <<Subscribing>> except use `unsubscribe` as the subject of the email
+
+
 == FAQ
 === What does it do?
 ProxAllium's goal is to make using https://www.torproject.org/about/overview.html.en[Tor] (Not to be confused with https://www.torproject.org/projects/torbrowser.html.en[Tor Browser]) easier for normal everyday users to circumvent censorship and be anonymous while using internet-based (up to some extent). It's basically a wrapper for Tor, except that it tries to be more than that.
