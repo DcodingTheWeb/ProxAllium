@@ -5,7 +5,7 @@ Tor Proxy Bundle for Windows.
 You can start by taking a look at the [wiki](https://github.com/DcodingTheWeb/ProxAllium/wiki), we are in the process of documenting stuff.
 
 ## Download
-The latest release/version is [Featury Feast v0.2-alpha](https://github.com/DcodingTheWeb/ProxAllium/releases/tag/v0.2-alpha) with Tor `0.2.8.11`.
+The latest release/version is [Featury Feast v0.2-alpha](https://github.com/DcodingTheWeb/ProxAllium/releases/tag/v0.2-alpha) with Tor `0.2.9.9`.
 
 [Make sure that you stay updated](https://github.com/DcodingTheWeb/ProxAllium/wiki/Mailing-list), older versions may compromise your privacy/security.
 
