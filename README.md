@@ -2,7 +2,7 @@
 Tor Proxy Bundle for Windows.
 
 ## Getting started
-You can start by taking a look at the [wiki](https://github.com/DcodingTheWeb/ProxAllium/wiki), we are in the process of documenting stuff.
+You can start by taking a look at the [documentation](https://github.com/DcodingTheWeb/ProxAllium/blob/master/help.adoc), we are in the process of documenting stuff.
 
 ## Download
 The latest release/version is [Featury Feast v0.2-alpha](https://github.com/DcodingTheWeb/ProxAllium/releases/tag/v0.2-alpha) with Tor `0.2.9.9`.
