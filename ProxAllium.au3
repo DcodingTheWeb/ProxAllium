@@ -151,7 +151,7 @@ EndFunc
 
 Func GUI_TorWindowExit()
 	If ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) Then
-		Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Close Tor?", "Do you really want to close Tor?", $g_hTorGUI)
+		Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Stop Tor?", "Do you really want to stop Tor?", $g_hTorGUI)
 		If $iButtonID = $IDNO Then Return
 	EndIf
 	Tor_Stop()
