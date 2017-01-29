@@ -1,0 +1,13 @@
+= ProxAllium
+Tor Proxy Bundle for Windows. ProxAllium is an open-source wrapper for Tor.
+
+== Getting started
+You can start by taking a look at the https://github.com/DcodingTheWeb/ProxAllium/blob/master/help.adoc[documentation], we are in the process of documenting stuff.
+
+== Download
+The latest release/version is https://github.com/DcodingTheWeb/ProxAllium/releases/tag/v0.2-alpha[Featury Feast v0.2-alpha] with Tor `0.2.9.9`.
+
+https://github.com/DcodingTheWeb/ProxAllium/blob/master/help.adoc#mailing-list-email-updates[Make sure that you stay updated], older versions may compromise your privacy/security.
+
+== Found a bug?
+Feel free to report a bug in GitHub's Issue Tracker... If possible, you can also https://github.com/DcodingTheWeb/ProxAllium/blob/master/help.adoc#i-have-a-question-where-can-i-ask[ask] before submitting an issue.
