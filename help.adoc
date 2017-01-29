@@ -5,9 +5,10 @@
 
 == Introduction
 ProxAllium is a wrapper for Tor which makes it *easier* to use without messing with anything! Just run ProxAllium and now you have a working Tor circuit for you to use!
-You can consult to the <<FAQ>> for more information.
 
 With ProxAllium, you can circumvent censorship and be secure while using public internet hotspots (you can also be anonymous but only upto some extent).
+
+You can consult to the <<FAQ>> for more information.
 
 == Mailing List (Email Updates)
 Now you can get e-mail notifications for new releases and updates from https://listengine.tuxfamily.org/proxallium.tuxfamily.org/news/[ProxAllium's Mailing List]!
