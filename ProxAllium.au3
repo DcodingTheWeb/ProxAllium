@@ -353,6 +353,7 @@ Func Tor_Stop()
 		GUI_LogOut("Failed to stop Tor (Error Code: " & @error & ')')
 		Return SetError($iError, 0, False)
 	EndIf
+	GUICtrlSetData($g_idTorOutput, "") ; Reset the Tor Output
 	GUI_LogOut("Successfully stopped Tor!")
 	Return True
 EndFunc
