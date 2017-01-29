@@ -57,7 +57,7 @@ https://www.icoconverter.com/ was used to create the final `ico` file!
 
 
 === Infrastructure
-Thanks to https://github.com[GitHub] (Code and Issue Tracker Hosting), https://www.tuxfamily.org/[Tux Family] (https://www.tuxfamily.org/en/about[Whole array of services to FOSS projects]) and [freenode](https://freenode.net/) (IRC Network) for providing such generous services!
+Thanks to https://github.com[GitHub] (Code and Issue Tracker Hosting), https://www.tuxfamily.org/[Tux Family] (https://www.tuxfamily.org/en/about[Whole array of services to FOSS projects]) and https://freenode.net/[freenode] (IRC Network) for providing such generous services!
 
 === You!
 For using ProxAllium!
