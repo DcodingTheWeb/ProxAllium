@@ -87,16 +87,6 @@ Func GUI_CreateTorOutputWindow()
 	Local $aGrayCmdColor[3] = [197, 197, 197] ; CMD Text Color's combination in RGB
 	Local Const $iGrayCmdColor = _ColorSetRGB($aGrayCmdColor) ; Get the RGB code of CMD Text Color
 	GUICtrlSetColor($g_idTorOutput, $iGrayCmdColor)
-	Local $idDummy = GUICtrlCreateDummy()
-	GUICtrlSetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
-	Local $aGuiAccelKeys[1][2] = [["^t", $idDummy]]
-	GUISetAccelerators($aGuiAccelKeys, $g_hTorGUI)
-	; Create a Dummy on $g_hLogGUI too
-	GUISwitch($g_hLogGUI)
-	$idDummy = GUICtrlCreateDummy()
-	GUICtrlSetOnEvent($idDummy, "GUI_ToggleTorOutputWindow")
-	$aGuiAccelKeys[0][1] = $idDummy
-	GUISetAccelerators($aGuiAccelKeys, $g_hLogGUI)
 EndFunc
 #EndRegion GUI Functions
 
