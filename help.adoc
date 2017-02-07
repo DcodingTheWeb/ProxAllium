@@ -34,7 +34,7 @@ It is not a replacement for the `TBB`, ProxAllium does not come with any browser
 You can find the 7-zip packages at the https://github.com/DcodingTheWeb/ProxAllium/releases[Releases] page
 
 === I have a question, where can I ask?
-You can ask your questions at the http://forum.dcodingtheweb.com[Dcoding The Web's Forum] or at http://forum.dcodingtheweb.com/showthread.php?tid=8&pid=24#pid24[#DTW in freenode] (https://kiwiirc.com/client/chat.freenode.net:+7000/?nick=ProxAlliumGuest?#DTW[Webchat is available too!]).
+You can ask your questions at irc://chat.freenode.net/#DTW[#DTW in freenode] (https://kiwiirc.com/client/chat.freenode.net:+7000/?nick=ProxAlliumGuest?#DTW[Webchat is available too!]).
 
 == Credits & Acknowledgments
 === Programming Language
