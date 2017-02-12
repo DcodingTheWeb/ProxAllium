@@ -78,7 +78,7 @@ EndFunc
 Func GUI_CreateTorOutputWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
 	Global $g_hTorGUI = GUICreate("Tor Output", $eiGuiWidth, $eiGuiHeight, Default, Default, $WS_OVERLAPPEDWINDOW)
-	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_TorWindowExit")
+	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_ToggleTorOutputWindow")
 	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleTorOutputWindow")
 	Global $g_idTorOutput = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hTorOutput = GUICtrlGetHandle($g_idTorOutput) ; Get the handle of the Edit control for future use in the Tor Output Handler
@@ -137,15 +137,6 @@ Func GUI_LogWindowExit()
 		Tor_Stop()
 		Exit
 	EndIf
-EndFunc
-
-Func GUI_TorWindowExit()
-	If ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) Then
-		Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Stop Tor?", "Do you really want to stop Tor?", $g_hTorGUI)
-		If $iButtonID = $IDNO Then Return
-	EndIf
-	Tor_Stop()
-	GUI_ToggleTorOutputWindow()
 EndFunc
 
 Func GUI_ToggleTorOutputWindow()
