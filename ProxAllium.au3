@@ -191,7 +191,9 @@ Func Handle_TorOutput()
 		Next
 	WEnd
 	$g_aTorProcess[$TOR_PROCESS_PID] = 0
-	GUI_LogOut("Tor exited with exit code: " & _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE]))
+	Local $iExitCode = _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE])
+	GUI_LogOut("Tor exited with exit code: " & $iExitCode)
+	TrayTip("Tor has exited", "Tor has exited with exit code: " & $iExitCode, 10, $TIP_ICONASTERISK)
 EndFunc
 
 Func Handle_WarningAndError(ByRef $aTorOutput)
@@ -215,6 +217,7 @@ Func Handle_Bootstrap(ByRef $aTorOutput)
 		GUI_LogOut("# Port       : " & $g_sTorConfig_Port)
 		GUI_LogOut("# Proxy Type : SOCKS5")
 		GUI_LogOut('##################################################')
+		TrayTip("Tor is ready", "Tor has successfully built an circuit, you can now start using the proxy!", 10, $TIP_ICONASTERISK)
 	EndIf
 EndFunc
 #EndRegion Misc. Functions
