@@ -31,7 +31,10 @@ ProxAllium's goal is to make using https://www.torproject.org/about/overview.htm
 It is not a replacement for the `TBB`, ProxAllium does not come with any browser! You should configure your own browser to work with `Tor` (yes, `Tor` because ProxAllium is just a "wrapper", remember?). Don't worry because it's really easy! You just have to use the proxy created by `Tor`. The method for using the proxy created by Tor is the same as using a traditional  https://en.wikipedia.org/wiki/SOCKS[SOCKS proxy].
 
 === Where do I download ProxAllium?
-You can find the 7-zip packages at the https://github.com/DcodingTheWeb/ProxAllium/releases[Releases] page
+You can find the 7-zip packages at the https://github.com/DcodingTheWeb/ProxAllium/releases[Releases] page.
+
+=== How do I make it start on startup?
+Create a shortcut of `ProxAllium.exe` at `%appdata%\Microsoft\Windows\Start Menu\Programs\Startup` and Windows will start ProxAllium automatically on startup.
 
 === I have a question, where can I ask?
 You can ask your questions at irc://chat.freenode.net/#DTW[#DTW in freenode] (https://kiwiirc.com/client/chat.freenode.net:+7000/?nick=ProxAlliumGuest?#DTW[Webchat is available too!]).
