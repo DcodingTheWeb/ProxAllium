@@ -11,10 +11,10 @@ With ProxAllium, you can circumvent censorship and be secure while using public 
 You can consult to the <<FAQ>> for more information.
 
 == Installation
-ProxAllium is fully portable, it does not require any _setup_ to be done and it does not mess with anything outside it's own folder!
+ProxAllium is fully portable, it does not require any _setup_ to be done and it does not mess with anything outside its own folder!
 
 Just use any file archiver (http://7-zip.org/[7-zip] is recommended) to extract the `.7z` file onto your computer, you can extract it to anywhere, it is your choice.
-The `7z` archive/package contains a folder called `ProxAllium` and within it you can find ProxAllium itself and other nessesary files.
+The `7z` archive/package contains a folder called `ProxAllium` and within it, you can find ProxAllium itself and other necessary files.
 
 Now you can start using ProxAllium by executing `ProxAllium.exe`! Easy, isn't it?
 
