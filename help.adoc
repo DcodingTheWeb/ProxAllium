@@ -33,7 +33,7 @@ To subscribe, send a mail with `subscribe` as the subject to `news-request@proxa
 
 == FAQ
 === What does it do?
-ProxAllium's goal is to make using https://www.torproject.org/about/overview.html.en[Tor] (Not to be confused with https://www.torproject.org/projects/torbrowser.html.en[Tor Browser]) easier for normal everyday users to circumvent censorship and be anonymous while using internet-based (up to some extent). It's basically a wrapper for Tor, except that it tries to be more than that.
+ProxAllium's goal is to make using https://www.torproject.org/about/overview.html.en[Tor] (Not to be confused with https://www.torproject.org/projects/torbrowser.html.en[Tor Browser]) easier for normal everyday users to circumvent censorship and be anonymous while using internet-based services (up to some extent). It's basically a wrapper for Tor, except that it tries to be more than that.
 
 === How is it different from Tor Browser (Bundle)?
 It is not a replacement for the `TBB`, ProxAllium does not come with any browser! You should configure your own browser to work with `Tor` (yes, `Tor` because ProxAllium is just a "wrapper", remember?). Don't worry because it's really easy! You just have to use the proxy created by `Tor`. The method for using the proxy created by Tor is the same as using a traditional  https://en.wikipedia.org/wiki/SOCKS[SOCKS proxy].
