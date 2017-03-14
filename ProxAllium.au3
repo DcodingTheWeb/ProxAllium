@@ -1,6 +1,3 @@
-; USE THIS PROGRAM AT YOUR OWN RISK
-; THIS PROGRAM IS CURRENTLY AT VERY EARLY STAGES - Not suitable for normal use!
-
 #NoTrayIcon
 
 #Region AutoIt3Wrapper Directives
