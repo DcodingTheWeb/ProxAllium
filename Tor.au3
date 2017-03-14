@@ -17,6 +17,7 @@
 ; _Tor_CheckVersion - Check the version of Tor.
 ; _Tor_SetPath      - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
 ; _Tor_Start        - Starts Tor
+; _Tor_VerifyConfig - Check if the configuration is valid.
 ; ===============================================================================================================================
 
 ; #CONSTANTS# ===================================================================================================================
