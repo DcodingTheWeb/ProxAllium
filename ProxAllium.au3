@@ -107,6 +107,7 @@ Global $g_iOutputPollInterval = Int(IniReadWrite($CONFIG_INI, "proxallium", "out
 
 Global $g_sTorConfig_Port = IniReadWrite($CONFIG_INI, "tor_config", "port", "9050")
 Global $g_bTorConfig_OnlyLocalhost = (IniReadWrite($CONFIG_INI, "tor_config", "localhost_only", "true") = "true")
+Global $g_sTorConfig_ExitNodeCC = IniRead($CONFIG_INI, "tor_config", "exit_node_country_code", "")
 
 Global $g_sTorConfig_ProxyType = IniRead($CONFIG_INI, "proxy", "type", "")
 Global $g_sTorConfig_ProxyHost = IniRead($CONFIG_INI, "proxy", "host", "")
@@ -298,6 +299,12 @@ Func Core_GenTorrc()
 				$sProxySettings &= '## Unknown proxy type detected!? Cannot generate config :('
 		EndSwitch
 		FileWriteLine($hTorrc, $sProxySettings)
+		FileWriteLine($hTorrc, "")
+	EndIf
+	If Not $g_sTorConfig_ExitNodeCC = "" Then
+		FileWriteLine($hTorrc, '## Country of the Exit Node')
+		FileWriteLine($hTorrc, 'ExitNodes {' & $g_sTorConfig_ExitNodeCC & '}')
+		FileWriteLine($hTorrc, "StrictNodes 1")
 		FileWriteLine($hTorrc, "")
 	EndIf
 	FileWriteLine($hTorrc, '###########################################################')
