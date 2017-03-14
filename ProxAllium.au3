@@ -20,12 +20,17 @@
 #include <FileConstants.au3>
 #include <FontConstants.au3>
 #include <GuiEdit.au3>
+#include <Misc.au3>
 #include <MsgBoxConstants.au3>
 #include <StringConstants.au3>
 #include <TrayConstants.au3>
 #include "Tor.au3"
 #include "IniReadWrite.au3"
 #EndRegion Includes
+
+#Region Multi-Instance Handler
+Handle_MultipleInstance()
+#EndRegion Multi-Instance Handler
 
 #Region Tray Creation
 Opt("TrayMenuMode", 1 + 2) ; No default menu and automatic checkmarks
@@ -163,6 +168,16 @@ EndFunc
 #EndRegion GUI Handlers
 
 #Region Event Handler Functions
+Func Handle_MultipleInstance()
+	If _Singleton(StringReplace(@ScriptFullPath, '\', '/'), 1) = 0 Then
+		Local $iMsgBoxParams = $MB_ICONWARNING + $MB_YESNO + $MB_DEFBUTTON2
+		Local $sMsgBoxMsg = "ProxAllium seems to be already running, do you still want to create a new instance?"
+		Local $iUserChoice = MsgBox($iMsgBoxParams, "ProxAllium is already running!", $sMsgBoxMsg)
+		If $iUserChoice = $IDYES Then Return
+		Exit
+	EndIf
+EndFunc
+
 Func Handle_TorOutput()
 	Local $aTorOutputCallbackFuncs = [2, "Handle_Bootstrap", "Handle_WarningAndError"]
 	Local $sPartialTorOutput = ""
