@@ -38,8 +38,8 @@ Global $g__sTorPath = "" ; Path to Tor.exe
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Tor_CheckVersion
 ; Description ...: Check the version of Tor.
-; Syntax ........: _Tor_CheckVersion()
-; Parameters ....: None
+; Syntax ........: _Tor_CheckVersion([$sTorPath = $g__sTorPath])
+; Parameters ....: $sTorPath            - [optional] Path of Tor's executable. Default is $g__sTorPath.
 ; Return values .: Success: $aTorVersion with 3 elements:
 ;                           $aTorVersion[$TOR_VERSION]        - Will contain the full version string, see remarks for the format.
 ;                           $aTorVersion[$TOR_VERSION_NUMBER] - Will contain the version number in this format: x.x.x.x
@@ -49,11 +49,11 @@ Global $g__sTorPath = "" ; Path to Tor.exe
 ;                           $TOR_ERROR_VERSION - If unable to determine version, @extended is set to StringRegExp's @error.
 ; Author ........: Damon Harris (TheDcoder)
 ; Remarks .......: $TOR_VERSION Format : x.x.x.x (git-a1b2c3d4e5f6g7h8)
-;                               Example: 0.2.8.11 (git-31e7b47fbebe8caf)
+;                               Example: 0.2.9.10 (git-1f6c8eda0073f464)
 ; Example .......: No
 ; ===============================================================================================================================
-Func _Tor_CheckVersion()
-	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, $g__sTorPath & ' --version')
+Func _Tor_CheckVersion($sTorPath = $g__sTorPath)
+	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, $sTorPath & ' --version')
 	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
 	Local $aTorVersion = StringRegExp($sOutput, '([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*) \(git-([a-z0-9]{16})\)', $STR_REGEXPARRAYFULLMATCH)
 	If @error Then Return SetError($TOR_ERROR_VERSION, @error, False)
