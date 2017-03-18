@@ -1,4 +1,6 @@
 #include-once
+#include <File.au3>
+#include <FileConstants.au3>
 #include <StringConstants.au3>
 #include "ProcessEx.au3"
 
@@ -26,9 +28,11 @@ Global Const $TOR_ERROR_PROCESS = 2 ; Error related to Tor.exe's process.
 Global Const $TOR_ERROR_VERSION = 3 ; Error related to version.
 Global Const $TOR_ERROR_CONFIG = 4 ; Error related to configuration.
 
-Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT
+Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT ; Associated with $aTorVersion returned by _Tor_CheckVersion
 
 Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE ; Associated with $aTorProcess returned by _Tor_Start
+
+Global Enum $TOR_FIND_VERSION, $TOR_FIND_PATH ; Associated with $aTorList returned by _Tor_Find
 ; ===============================================================================================================================
 
 ; #VARIABLES# ===================================================================================================================
@@ -58,6 +62,40 @@ Func _Tor_CheckVersion($sTorPath = $g__sTorPath)
 	Local $aTorVersion = StringRegExp($sOutput, '([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*) \(git-([a-z0-9]{16})\)', $STR_REGEXPARRAYFULLMATCH)
 	If @error Then Return SetError($TOR_ERROR_VERSION, @error, False)
 	Return $aTorVersion
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Find
+; Description ...: Tries to find tor.exe in the given folders.
+; Syntax ........: _Tor_Find($vFolders)
+; Parameters ....: $vFolders            - $vFolders to search. Can be an array or a string delimited by a pipe charecter (|)
+; Return values .: Success: $aTorList, See remarks for format.
+;                  Failure: Empty $aTorList and @error set to $TOR_ERROR_GENERIC
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: 1. $aTorList is a two dimensional array with 2 columns:
+;                     $TOR_FIND_VERSION - This column contains the version of the found Tor executable
+;                     $TOR_FIND_PATH    - This column contains the path fo the found Tor executable
+;                     Each row represents a Tor executable.
+;                  2. This function can take some time to return.
+;                  3. $aTorList is not sorted!
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Find($vFolders)
+	If IsString($vFolders) Then $vFolders = StringSplit($vFolders, '|', $STR_NOCOUNT)
+	Local $aFiles[0]
+	For $sFolder In $vFolders
+		_ArrayConcatenate($aFiles, _FileListToArrayRec($sFolder, "tor.exe", $FLTAR_FILES, $FLTAR_RECUR, $FLTAR_NOSORT, $FLTAR_FULLPATH), 1)
+	Next
+	Local $aTorList[0][2]
+	If UBound($aFiles) = 0 Then Return SetError($TOR_ERROR_GENERIC, 0, $aTorList)
+	Local $aTorVersion[0]
+	For $sFile In $aFiles
+		$aPath = _PathSplit($sFile, $vFolders, $vFolders, $vFolders, $vFolders) ; $vFolders is just used as a dummy here
+		If Not ($aPath[3] = "tor") Then ContinueLoop
+		$aTorVersion = _Tor_CheckVersion($sFile)
+		_ArrayAdd($aTorList, $aTorVersion[$TOR_VERSION_NUMBER] & '|' & $sFile)
+	Next
+	Return $aTorList
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
