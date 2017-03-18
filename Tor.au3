@@ -29,9 +29,7 @@ Global Const $TOR_ERROR_VERSION = 3 ; Error related to version.
 Global Const $TOR_ERROR_CONFIG = 4 ; Error related to configuration.
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT ; Associated with $aTorVersion returned by _Tor_CheckVersion
-
 Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE ; Associated with $aTorProcess returned by _Tor_Start
-
 Global Enum $TOR_FIND_VERSION, $TOR_FIND_PATH ; Associated with $aTorList returned by _Tor_Find
 ; ===============================================================================================================================
 
