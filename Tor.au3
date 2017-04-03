@@ -17,6 +17,7 @@
 
 ; #CURRENT# =====================================================================================================================
 ; _Tor_CheckVersion - Check the version of Tor.
+; _Tor_Find         - Lists the tor executables and geoip files.
 ; _Tor_SetPath      - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
 ; _Tor_Start        - Starts Tor
 ; _Tor_VerifyConfig - Check if the configuration is valid.
@@ -30,7 +31,8 @@ Global Const $TOR_ERROR_CONFIG = 4 ; Error related to configuration.
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT ; Associated with $aTorVersion returned by _Tor_CheckVersion
 Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE ; Associated with $aTorProcess returned by _Tor_Start
-Global Enum $TOR_FIND_VERSION, $TOR_FIND_PATH ; Associated with $aTorList returned by _Tor_Find
+Global Enum $TOR_FIND_VERSION, $TOR_FIND_PATH ; Associated with $aList returned by _Tor_Find
+Global Enum $TOR_FIND_TORLIST, $TOR_FIND_GEOIP, $TOR_FIND_GEOIP6 ; Associated with arrays found inside $aList returned by _Tor_Find
 ; ===============================================================================================================================
 
 ; #VARIABLES# ===================================================================================================================
@@ -64,36 +66,57 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Tor_Find
-; Description ...: Tries to find tor.exe in the given folders.
+; Description ...: Lists the tor executables and geoip files.
 ; Syntax ........: _Tor_Find($vFolders)
 ; Parameters ....: $vFolders            - $vFolders to search. Can be an array or a string delimited by a pipe charecter (|)
-; Return values .: Success: $aTorList, See remarks for format.
-;                  Failure: Empty $aTorList and @error set to $TOR_ERROR_GENERIC
+; Return values .: Success: $aList, See remarks for format.
+;                  Failure: Empty $aList and @error set to $TOR_ERROR_GENERIC
 ; Author ........: Damon Harris (TheDcoder)
-; Remarks .......: 1. $aTorList is a two dimensional array with 2 columns:
-;                     $TOR_FIND_VERSION - This column contains the version of the found Tor executable
-;                     $TOR_FIND_PATH    - This column contains the path fo the found Tor executable
-;                     Each row represents a Tor executable.
+; Remarks .......: 1. $aList is an array with 3 elements:
+;                     $aList[$TOR_FIND_TORLIST] - This element contains the list of tor executables
+;                     $aList[$TOR_FIND_GEOIP]   - This element contains the list of GeoIP files
+;                     $aList[$TOR_FIND_GEOIP6]  - This element contains the list of GeoIP6 files
+;                     Each of the elements are made up of 2 columns
+;                     $TOR_FIND_VERSION - This column contains the version of the found file
+;                     $TOR_FIND_PATH    - This column contains the path fo the found file
 ;                  2. This function can take some time to return.
-;                  3. $aTorList is not sorted!
+;                  3. Arrays inside $aList are not sorted!
 ; Example .......: No
 ; ===============================================================================================================================
 Func _Tor_Find($vFolders)
 	If IsString($vFolders) Then $vFolders = StringSplit($vFolders, '|', $STR_NOCOUNT)
 	Local $aFiles[0]
 	For $sFolder In $vFolders
-		_ArrayConcatenate($aFiles, _FileListToArrayRec($sFolder, "tor.exe", $FLTAR_FILES, $FLTAR_RECUR, $FLTAR_NOSORT, $FLTAR_FULLPATH), 1)
+		_ArrayConcatenate($aFiles, _FileListToArrayRec($sFolder, "tor.exe;geoip;geoip6", $FLTAR_FILES, $FLTAR_RECUR, $FLTAR_NOSORT, $FLTAR_FULLPATH), 1)
 	Next
 	Local $aTorList[0][2]
+	Local $aGeoIP[0][2]
+	Local $aGeoIPv6[0][2]
 	If UBound($aFiles) = 0 Then Return SetError($TOR_ERROR_GENERIC, 0, $aTorList)
+	Local $aPath
 	Local $aTorVersion[0]
+	Local $aGeoFileDate[0]
 	For $sFile In $aFiles
 		$aPath = _PathSplit($sFile, $vFolders, $vFolders, $vFolders, $vFolders) ; $vFolders is just used as a dummy here
-		If Not ($aPath[3] = "tor") Then ContinueLoop
-		$aTorVersion = _Tor_CheckVersion($sFile)
-		_ArrayAdd($aTorList, $aTorVersion[$TOR_VERSION_NUMBER] & '|' & $sFile)
+		Switch $aPath[3]
+			Case "tor"
+				$aTorVersion = _Tor_CheckVersion($sFile)
+				If Not @error Then _ArrayAdd($aTorList, $aTorVersion[$TOR_VERSION_NUMBER] & '|' & $sFile)
+
+			Case "geoip", "geoip6"
+				$aGeoFileDate = StringRegExp("February 8 2017", '([A-Z][a-z]*) ([\d]{1,2}) (\d{4})', $STR_REGEXPARRAYMATCH)
+				If Not @error Then
+					Switch $aPath[3]
+						Case "geoip"
+							_ArrayAdd($aGeoIP, _ArrayToString($aGeoFileDate, ' ') & '|' & $sFile)
+						Case "geoip6"
+							_ArrayAdd($aGeoIPv6, _ArrayToString($aGeoFileDate, ' ') & '|' & $sFile)
+					EndSwitch
+				EndIf
+		EndSwitch
 	Next
-	Return $aTorList
+	Local $aList[3] = [$aTorList, $aGeoIP, $aGeoIPv6]
+	Return $aList
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
