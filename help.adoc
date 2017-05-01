@@ -46,7 +46,7 @@ You can find the 7-zip packages at the https://github.com/DcodingTheWeb/ProxAlli
 Create a shortcut of `ProxAllium.exe` at `%appdata%\Microsoft\Windows\Start Menu\Programs\Startup` and Windows will start ProxAllium automatically on startup.
 
 === I have a question, where can I ask?
-You can ask your questions at irc://chat.freenode.net/#DTW[#DTW in freenode] (https://kiwiirc.com/client/chat.freenode.net:+7000/?nick=ProxAlliumGuest?#DTW[Webchat is available too!]).
+You can consult to the "link:https://proxallium.tuxfamily.org/chat/[Chat]" page on ProxAllium's website.
 
 == Credits & Acknowledgments
 === Programming Language
@@ -69,7 +69,7 @@ https://www.icoconverter.com/ was used to create the final `ico` file!
 
 
 === Infrastructure
-Thanks to https://github.com[GitHub] (Code and Issue Tracker Hosting), https://www.tuxfamily.org/[Tux Family] (https://www.tuxfamily.org/en/about[Whole array of services to FOSS projects]) and https://freenode.net/[freenode] (IRC Network) for providing such generous services!
+Thanks to https://github.com[GitHub] (Code and Issue Tracker Hosting), https://www.tuxfamily.org/[Tux Family] (https://www.tuxfamily.org/en/about[Whole array of services to FOSS projects]) and https://www.oftc.net/[OFTC] (IRC Network) for providing such generous services!
 
 === You!
 For using ProxAllium!
