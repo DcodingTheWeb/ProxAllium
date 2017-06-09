@@ -3,7 +3,6 @@
 #Region AutoIt3Wrapper Directives
 #AutoIt3Wrapper_Icon=icon.ico
 #AutoIt3Wrapper_Outfile=Builds\ProxAllium.exe
-#AutoIt3Wrapper_UseUpx=y
 #AutoIt3Wrapper_Res_Description=Tor Proxy Bundle for Windows
 #AutoIt3Wrapper_Res_Fileversion=0.2.0.0
 #AutoIt3Wrapper_Res_ProductVersion=0.2.0.0
