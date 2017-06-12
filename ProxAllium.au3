@@ -222,7 +222,7 @@ Func Handle_Bootstrap(ByRef $aTorOutput)
 		GUI_LogOut("# Port       : " & $g_sTorConfig_Port)
 		GUI_LogOut("# Proxy Type : SOCKS5")
 		GUI_LogOut('##################################################')
-		TrayTip("Tor is ready", "Tor has successfully built an circuit, you can now start using the proxy!", 10, $TIP_ICONASTERISK)
+		TrayTip("Tor is ready", "Tor has successfully built a circuit, you can now start using the proxy!", 10, $TIP_ICONASTERISK)
 	EndIf
 EndFunc
 
