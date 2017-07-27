@@ -70,7 +70,7 @@ EndFunc
 ; Syntax ........: _Tor_Find($vFolders)
 ; Parameters ....: $vFolders            - $vFolders to search. Can be an array or a string delimited by a pipe charecter (|)
 ; Return values .: Success: $aList, See remarks for format.
-;                  Failure: Empty $aList and @error set to $TOR_ERROR_GENERIC
+;                  Failure: False and @error set to $TOR_ERROR_GENERIC
 ; Author ........: Damon Harris (TheDcoder)
 ; Remarks .......: 1. $aList is an array with 3 elements:
 ;                     $aList[$TOR_FIND_TORLIST] - This element contains the list of tor executables
@@ -89,10 +89,10 @@ Func _Tor_Find($vFolders)
 	For $sFolder In $vFolders
 		_ArrayConcatenate($aFiles, _FileListToArrayRec($sFolder, "tor.exe;geoip;geoip6", $FLTAR_FILES, $FLTAR_RECUR, $FLTAR_NOSORT, $FLTAR_FULLPATH), 1)
 	Next
+	If UBound($aFiles) = 0 Then Return SetError($TOR_ERROR_GENERIC, 0, False)
 	Local $aTorList[0][2]
 	Local $aGeoIP[0][2]
 	Local $aGeoIPv6[0][2]
-	If UBound($aFiles) = 0 Then Return SetError($TOR_ERROR_GENERIC, 0, $aTorList)
 	Local $aPath
 	Local $aTorVersion[0]
 	Local $aGeoFileDate[0]
