@@ -104,7 +104,7 @@ Func _Tor_Find($vFolders)
 				If Not @error Then _ArrayAdd($aTorList, $aTorVersion[$TOR_VERSION_NUMBER] & '|' & $sFile)
 
 			Case "geoip", "geoip6"
-				$aGeoFileDate = StringRegExp("February 8 2017", '([A-Z][a-z]*) ([\d]{1,2}) (\d{4})', $STR_REGEXPARRAYMATCH)
+				$aGeoFileDate = StringRegExp(FileReadLine($sFile), '([A-Z][a-z]*) ([\d]{1,2}) (\d{4})', $STR_REGEXPARRAYMATCH)
 				If Not @error Then
 					Switch $aPath[3]
 						Case "geoip"
