@@ -137,7 +137,7 @@ EndFunc
 ; ===============================================================================================================================
 Func _Tor_SetPath($sTorPath, $bVerify = True)
 	If Not $bVerify Then
-		$g__sTorPath = FileGetLongName($sTorPath)
+		$g__sTorPath = $sTorPath
 		Return True
 	EndIf
 	If Not FileExists($sTorPath) Then Return SetError($TOR_ERROR_GENERIC, 0, False)
