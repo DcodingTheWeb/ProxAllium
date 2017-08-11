@@ -37,12 +37,11 @@ Opt("TrayOnEventMode", 1) ; OnEvent mode
 Opt("TrayAutoPause", 0) ; No Auto-Pause
 
 TraySetClick(16) ; Will display the menu when releasing the secondary mouse button
-TraySetOnEvent($TRAY_EVENT_PRIMARYDOWN, "GUI_ToggleLogWindow")
-
+TraySetOnEvent($TRAY_EVENT_PRIMARYDOWN, "GUI_ToggleMainWindow")
 TrayItemSetState(TrayCreateItem("ProxAllium"), $TRAY_DISABLE)
 TrayCreateItem("")
-Global $g_idTrayLogToggle = TrayCreateItem("Hide Log Window")
-TrayItemSetOnEvent($g_idTrayLogToggle, "GUI_ToggleLogWindow")
+Global $g_idTrayMainWinToggle = TrayCreateItem("Hide Main Window")
+TrayItemSetOnEvent($g_idTrayMainWinToggle, "GUI_ToggleMainWindow")
 Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
 TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
 TrayCreateItem("")
@@ -51,31 +50,61 @@ TrayItemSetOnEvent($g_idTrayToggleTor, "Tor_Toggle")
 TrayCreateItem("")
 TrayItemSetOnEvent(TrayCreateItem("Help"), "Handle_Help")
 TrayCreateItem("")
-TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_LogWindowExit")
+TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_MainWindowExit")
 TraySetState($TRAY_ICONSTATE_SHOW)
 #EndRegion Tray Creation
 
 #Region GUI Creation
 Opt("GUIOnEventMode", 1)
-GUI_CreateLogWindow()
+GUI_CreateMainWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
 GUI_CreateTorOutputWindow()
 
-Func GUI_CreateLogWindow()
-	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
-	Global $g_hLogGUI = GUICreate("ProxAllium", $eiGuiWidth, $eiGuiHeight, Default, Default, $WS_OVERLAPPEDWINDOW)
-	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_LogWindowExit")
-	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleLogWindow")
-	Global $g_idLogCtrl = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
-	Global $g_hLogCtrl = GUICtrlGetHandle($g_idLogCtrl) ; Get the handle of the Edit control for future use in GUI_LogOut
-	GUICtrlSetFont($g_idLogCtrl, 9, Default, Default, "Consolas")
-	GUISetState(@SW_SHOW, $g_hLogGUI) ; Make the GUI visible
+Func GUI_CreateMainWindow()
+	Global $g_hMainGUI = GUICreate("ProxAllium", 580, 350)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_MainWindowExit", $g_hMainGUI)
+	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleMainWindow", $g_hMainGUI)
+	GUICtrlCreateGroup("Proxy Details", 5, 5, 570, 117)
+	GUICtrlCreateLabel("Hostname:", 10, 27, 60, 15)
+	Global $g_idMainGUI_Hostname = GUICtrlCreateInput("localhost", 73, 22, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	GUICtrlSetBkColor(-1, $COLOR_WHITE)
+	GUICtrlCreateLabel("IP Address:", 10, 52, 60, 15)
+	Global $g_idMainGUI_IPAddress = GUICtrlCreateInput("127.0.0.1", 73, 47, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	GUICtrlSetBkColor(-1, $COLOR_WHITE)
+	GUICtrlCreateLabel("Port:", 10, 77, 60, 15)
+	Global $g_idMainGUI_Port = GUICtrlCreateInput('...', 73, 72, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	GUICtrlSetBkColor(-1, $COLOR_WHITE)
+	GUICtrlCreateLabel("Proxy Type:", 10, 102, 60, 15)
+	GUICtrlCreateInput("SOCKS5", 73, 97, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	GUICtrlSetBkColor(-1, $COLOR_WHITE)
+	GUICtrlCreateGroup("Tor Details", 5, 125, 570, 64)
+	GUICtrlCreateLabel("Tor PID:", 10, 144, 60, 15)
+	Global $g_idMainGUI_TorPID = GUICtrlCreateInput('N/A', 73, 139, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	GUICtrlSetBkColor(-1, $COLOR_WHITE)
+	GUICtrlCreateLabel("Tor Version:", 10, 169, 60, 15)
+	Global $g_idMainGUI_TorVersion = GUICtrlCreateInput('Detecting...', 73, 164, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	GUICtrlSetBkColor(-1, $COLOR_WHITE)
+	GUICtrlCreateGroup("Control Panel", 5, 192, 570, 42)
+	GUICtrlCreateLabel("Status:", 10, 213, 33, 15)
+	Global $g_idMainGUI_Status = GUICtrlCreateInput('...', 48, 208, 438, 20, BitOr($ES_CENTER, $ES_READONLY), $WS_EX_CLIENTEDGE)
+	GUICtrlSetBkColor(-1, $COLOR_WHITE)
+	Global $g_idMainGUI_ToggleButton = GUICtrlCreateButton("Stop", 489, 207, 82, 22)
+	GUICtrlSetOnEvent(-1, "Tor_Toggle")
+	Global $g_idMainGUI_Log = GUICtrlCreateEdit("", 5, 238 , 570, 107, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
+	Global $g_hMainGUI_Log = GUICtrlGetHandle($g_idMainGUI_Log)
+	GUICtrlSetFont($g_idMainGUI_Log, 9, Default, Default, "Consolas")
+	GUICtrlSetBkColor($g_idMainGUI_Log, $COLOR_WHITE)
+	GUISetState(@SW_SHOW, $g_hMainGUI) ; Make the GUI visible
 EndFunc
 
 Func GUI_LogOut($sText, $bEOL = True)
 	If $bEOL Then $sText &= @CRLF
-	_GUICtrlEdit_AppendText($g_hLogCtrl, $sText)
+	_GUICtrlEdit_AppendText($g_hMainGUI_Log, $sText)
 	ConsoleWrite($sText)
+EndFunc
+
+Func GUI_SetStatus($sStatus = '...')
+	GUICtrlSetData($g_idMainGUI_Status, $sStatus)
 EndFunc
 
 Func GUI_CreateTorOutputWindow()
@@ -135,12 +164,14 @@ Core_Idle()
 
 #Region Functions
 #Region GUI Handlers Functions
-Func GUI_LogWindowExit()
-	Local $iButtonID = MsgBox($MB_YESNO + $MB_ICONQUESTION, "Exit", "Do you really want to close ProxAllium?", $g_hLogGUI)
-	If $iButtonID = $IDYES Then
-		Tor_Stop()
-		Exit
-	EndIf
+Func GUI_MainWindowExit()
+	Local $iMsgBoxFlags = $MB_YESNO + $MB_ICONQUESTION
+	Local $sMsgBoxTitle = "Close ProxAllium"
+	Local $sMsgBoxMsg = "Do you really want to close ProxAllium?"
+	Local $iButtonID = MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg)
+	If $iButtonID = $IDNO Then Return
+	Tor_Stop()
+	Exit
 EndFunc
 
 Func GUI_ToggleTorOutputWindow()
@@ -154,15 +185,15 @@ Func GUI_ToggleTorOutputWindow()
 	If $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
 EndFunc
 
-Func GUI_ToggleLogWindow()
+Func GUI_ToggleMainWindow()
 	Local Static $bHidden = False
 	If $bHidden Then
-		$bHidden = Not (GUISetState(@SW_SHOWNORMAL, $g_hLogGUI) = 1)
-		If Not $bHidden Then TrayItemSetText($g_idTrayLogToggle, "Hide Log Window")
+		$bHidden = Not (GUISetState(@SW_SHOWNORMAL, $g_hMainGUI) = 1)
+		If Not $bHidden Then TrayItemSetText($g_idTrayMainWinToggle, "Hide Main Window")
 		Return
 	EndIf
-	$bHidden = (GUISetState(@SW_HIDE, $g_hLogGUI) = 1)
-	If $bHidden Then TrayItemSetText($g_idTrayLogToggle, "Show Log Window")
+	$bHidden = (GUISetState(@SW_HIDE, $g_hMainGUI) = 1)
+	If $bHidden Then TrayItemSetText($g_idTrayMainWinToggle, "Show Main Window")
 EndFunc
 #EndRegion GUI Handlers
 
@@ -197,6 +228,7 @@ Func Handle_TorOutput()
 	WEnd
 	$g_aTorProcess[$TOR_PROCESS_PID] = 0
 	Local $iExitCode = _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE])
+	GUI_SetStatus("Stopped")
 	GUI_LogOut("Tor exited with exit code: " & $iExitCode)
 	TrayTip("Tor has exited", "Tor has exited with exit code: " & $iExitCode, 10, $TIP_ICONASTERISK)
 EndFunc
@@ -212,16 +244,12 @@ Func Handle_Bootstrap(ByRef $aTorOutput)
 	If Not ($aTorOutput[0] >= 7 And $aTorOutput[5] = "Bootstrapped") Then Return
 	Local $iPercentage = Int($aTorOutput[6])
 	If $iPercentage = 0 Then GUI_LogOut("Trying to build a circuit, please wait...")
+	GUI_SetStatus('Building a circuit... (' & $iPercentage & '%)')
 	GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
 	If $iPercentage = 100 Then
+		GUI_SetStatus("Running")
 		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
-		GUI_LogOut('##################################################')
-		GUI_LogOut("# You can now connect to the Tor proxy hosted at:")
-		GUI_LogOut("# Hostname   : localhost")
-		GUI_LogOut("# IP Address : 127.0.0.1")
-		GUI_LogOut("# Port       : " & $g_sTorConfig_Port)
-		GUI_LogOut("# Proxy Type : SOCKS5")
-		GUI_LogOut('##################################################')
+		GUICtrlSetData($g_idMainGUI_Port, $g_sTorConfig_Port)
 		TrayTip("Tor is ready", "Tor has successfully built a circuit, you can now start using the proxy!", 10, $TIP_ICONASTERISK)
 	EndIf
 EndFunc
@@ -334,8 +362,14 @@ EndFunc
 
 #Region Tor Functions
 Func Tor_Initialize()
+	GUI_SetStatus("Initializing Tor...")
 	$g_aTorVersion = _Tor_SetPath($g_sTorPath)
-	If Not @error Then Return GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
+	GUI_SetStatus()
+	If Not @error Then
+		GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
+		GUICtrlSetData($g_idMainGUI_TorVersion, $g_aTorVersion[$TOR_VERSION])
+		Return True
+	EndIf
 	SetError(@error)
 	Switch @error
 		Case $TOR_ERROR_GENERIC
@@ -347,11 +381,13 @@ Func Tor_Initialize()
 EndFunc
 
 Func Tor_Start()
+	GUI_SetStatus("Starting Tor...")
 	GUI_LogOut("Starting Tor... ", False)
 	$g_aTorProcess = _Tor_Start($g_sTorConfigFile)
-	If @error Then
-		Local $iError = @error
-		Switch @error
+	Local $iError = @error
+	If $iError Then
+		GUI_SetStatus()
+		Switch $iError
 			Case $TOR_ERROR_PROCESS
 				GUI_LogOut("Unable to start Tor!")
 
@@ -360,18 +396,22 @@ Func Tor_Start()
 		EndSwitch
 		Return SetError($iError, 0, False)
 	EndIf
+	GUI_SetStatus("Waiting for Tor...")
 	GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
+	GUICtrlSetData($g_idMainGUI_TorPID, $g_aTorProcess[$TOR_PROCESS_PID])
 	Return True
 EndFunc
 
 Func Tor_Stop()
 	GUI_LogOut("Trying to stop Tor... ", False)
+	GUI_SetStatus("Stopping Tor...")
 	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
 	If @error Then
 		Local $iError = @error
 		GUI_LogOut("Failed to stop Tor (Error Code: " & @error & ')')
 		Return SetError($iError, 0, False)
 	EndIf
+	GUICtrlSetData($g_idMainGUI_TorPID, 'N/A')
 	GUICtrlSetData($g_idTorOutput, "") ; Reset the Tor Output
 	GUI_LogOut("Successfully stopped Tor!")
 	Return True
@@ -381,11 +421,15 @@ Func Tor_Toggle()
 	Local Static $bTorAlive = True
 	If $bTorAlive Then
 		$bTorAlive = Not Tor_Stop()
-		If Not @error Then TrayItemSetText($g_idTrayToggleTor, "Start Tor")
+		If Not @error Then
+			TrayItemSetText($g_idTrayToggleTor, "Start Tor")
+			GUICtrlSetData($g_idMainGUI_ToggleButton, "Start")
+		EndIf
 	Else
 		$bTorAlive = Tor_Start()
 		If Not @error Then
 			TrayItemSetText($g_idTrayToggleTor, "Stop Tor")
+			GUICtrlSetData($g_idMainGUI_ToggleButton, "Stop")
 		EndIf
 	EndIf
 EndFunc
