@@ -48,8 +48,6 @@ TrayCreateItem("")
 Global $g_idTrayToggleTor = TrayCreateItem("Stop Tor")
 TrayItemSetOnEvent($g_idTrayToggleTor, "Tor_Toggle")
 TrayCreateItem("")
-TrayItemSetOnEvent(TrayCreateItem("Help"), "Handle_Help")
-TrayCreateItem("")
 TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_MainWindowExit")
 TraySetState($TRAY_ICONSTATE_SHOW)
 #EndRegion Tray Creation
@@ -252,10 +250,6 @@ Func Handle_Bootstrap(ByRef $aTorOutput)
 		GUICtrlSetData($g_idMainGUI_Port, $g_sTorConfig_Port)
 		TrayTip("Tor is ready", "Tor has successfully built a circuit, you can now start using the proxy!", 10, $TIP_ICONASTERISK)
 	EndIf
-EndFunc
-
-Func Handle_Help()
-	ShellExecute(@ScriptDir & '\help.html', "", "", "open")
 EndFunc
 #EndRegion Misc. Functions
 
