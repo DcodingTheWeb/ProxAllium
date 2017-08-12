@@ -358,21 +358,23 @@ EndFunc
 #Region Tor Functions
 Func Tor_Initialize()
 	GUI_SetStatus("Initializing Tor...")
-	$g_aTorVersion = _Tor_SetPath($g_sTorPath)
+	Local $aTorVersion = _Tor_SetPath($g_sTorPath)
+	Local $iError = @error
 	GUI_SetStatus()
-	If Not @error Then
+	If Not $iError Then
+		$g_aTorVersion = $aTorVersion
 		GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 		GUICtrlSetData($g_idMainGUI_TorVersion, $g_aTorVersion[$TOR_VERSION])
 		Return True
 	EndIf
-	SetError(@error)
-	Switch @error
+	Switch $iError
 		Case $TOR_ERROR_GENERIC
 			GUI_LogOut("Cannot find Tor!")
 
 		Case $TOR_ERROR_VERSION
 			GUI_LogOut("Unable to identify Tor's version!")
 	EndSwitch
+	Return SetError($iError)
 EndFunc
 
 Func Tor_Start()
