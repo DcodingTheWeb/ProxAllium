@@ -207,7 +207,7 @@ Func Handle_MultipleInstance()
 EndFunc
 
 Func Handle_TorOutput()
-	Local $aTorOutputCallbackFuncs = [2, "Handle_Bootstrap", "Handle_WarningAndError"]
+	Local $aCallbackFuncs = [Handle_Bootstrap, Handle_WarningAndError]
 	Local $sPartialTorOutput = ""
 	Local $aPartialTorOutput[0]
 	Local $bTorAlive = True
@@ -219,8 +219,8 @@ Func Handle_TorOutput()
 		_GUICtrlEdit_AppendText($g_hTorOutput, $sPartialTorOutput)
 		$aPartialTorOutput = StringSplit(StringStripWS($sPartialTorOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
 		For $iLine = 1 To $aPartialTorOutput[0]
-			For $iCallBackFunc = 1 To $aTorOutputCallbackFuncs[0]
-				Call($aTorOutputCallbackFuncs[$iCallBackFunc], StringSplit($aPartialTorOutput[$iLine], ' '))
+			For $fuCallbackFunc In $aCallbackFuncs
+				$fuCallbackFunc(StringSplit($aPartialTorOutput[$iLine], ' '))
 			Next
 		Next
 	WEnd
