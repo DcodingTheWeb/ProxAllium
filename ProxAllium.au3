@@ -242,8 +242,9 @@ Func Handle_Bootstrap(ByRef $aTorOutput)
 	If Not ($aTorOutput[0] >= 7 And $aTorOutput[5] = "Bootstrapped") Then Return
 	Local $iPercentage = Int($aTorOutput[6])
 	If $iPercentage = 0 Then GUI_LogOut("Trying to build a circuit, please wait...")
-	GUI_SetStatus('Building a circuit... (' & $iPercentage & '%)')
-	GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
+	Local $sText = _ArrayToString($aTorOutput, ' ', 5)
+	GUI_SetStatus($sText)
+	GUI_LogOut($sText)
 	If $iPercentage = 100 Then
 		GUI_SetStatus("Running")
 		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
