@@ -354,6 +354,10 @@ Func Core_GenTorrc()
 	FileSetEnd($hTorrc)
 	FileClose($hTorrc)
 EndFunc
+
+Func IsTorRunning()
+	Return ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) <> 0
+EndFunc
 #EndRegion Core Functions
 
 #Region Tor Functions
