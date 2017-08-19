@@ -380,7 +380,7 @@ EndFunc
 Func Tor_Start()
 	GUI_SetStatus("Starting Tor...")
 	GUI_LogOut("Starting Tor... ", False)
-	$g_aTorProcess = _Tor_Start($g_sTorConfigFile)
+	Local $aTorProcess = _Tor_Start($g_sTorConfigFile)
 	Local $iError = @error
 	If $iError Then
 		GUI_SetStatus()
@@ -393,6 +393,7 @@ Func Tor_Start()
 		EndSwitch
 		Return SetError($iError, 0, False)
 	EndIf
+	$g_aTorProcess = $aTorProcess
 	GUI_SetStatus("Waiting for Tor...")
 	GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 	GUICtrlSetData($g_idMainGUI_TorPID, $g_aTorProcess[$TOR_PROCESS_PID])
