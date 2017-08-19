@@ -169,7 +169,7 @@ Func GUI_MainWindowExit()
 	Local $sMsgBoxMsg = "Do you really want to close ProxAllium?"
 	Local $iButtonID = MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg)
 	If $iButtonID = $IDNO Then Return
-	Tor_Stop()
+	If IsTorRunning() Then Tor_Stop()
 	Exit
 EndFunc
 
@@ -211,10 +211,8 @@ Func Handle_TorOutput()
 	Local $aCallbackFuncs = [Handle_Bootstrap, Handle_WarningAndError]
 	Local $sPartialTorOutput = ""
 	Local $aPartialTorOutput[0]
-	Local $bTorAlive = True
-	While $bTorAlive ; Loop until Tor is dead
+	While IsTorRunning() ; Loop until Tor is dead
 		Sleep($g_iOutputPollInterval) ; Don't kill the CPU
-		$bTorAlive = Not (ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) = 0) ; Check if Tor still exists
 		$sPartialTorOutput = StdoutRead($g_aTorProcess[$TOR_PROCESS_PID])
 		If $sPartialTorOutput = "" Then ContinueLoop
 		_GUICtrlEdit_AppendText($g_hTorOutput, $sPartialTorOutput)
@@ -265,7 +263,7 @@ EndFunc
 
 Func Core_Idle()
 	Do
-		If ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) Then Handle_TorOutput()
+		If IsTorRunning() Then Handle_TorOutput()
 		Sleep($g_iOutputPollInterval)
 	Until False
 EndFunc
@@ -437,7 +435,7 @@ Func Tor_Stop()
 EndFunc
 
 Func Tor_Toggle()
-	If ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) Then
+	If IsTorRunning() Then
 		Tor_Stop()
 	Else
 		Tor_Start()
