@@ -80,7 +80,7 @@ Func GUI_CreateMainWindow()
 	Global $g_idMainGUI_TorPID = GUICtrlCreateInput('N/A', 73, 139, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	GUICtrlCreateLabel("Tor Version:", 10, 169, 60, 15)
-	Global $g_idMainGUI_TorVersion = GUICtrlCreateInput('Detecting...', 73, 164, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	Global $g_idMainGUI_TorVersion = GUICtrlCreateInput('...', 73, 164, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	GUICtrlCreateGroup("Control Panel", 5, 192, 570, 42)
 	GUICtrlCreateLabel("Status:", 10, 213, 33, 15)
@@ -359,6 +359,7 @@ EndFunc
 #Region Tor Functions
 Func Tor_Initialize()
 	GUI_SetStatus("Initializing Tor...")
+	GUICtrlSetData($g_idMainGUI_TorVersion, "Detecting...")
 	Local $aTorVersion = _Tor_SetPath($g_sTorPath)
 	Local $iError = @error
 	GUI_SetStatus()
@@ -368,6 +369,7 @@ Func Tor_Initialize()
 		GUICtrlSetData($g_idMainGUI_TorVersion, $g_aTorVersion[$TOR_VERSION])
 		Return True
 	EndIf
+	GUICtrlSetData($g_idMainGUI_TorVersion, '...')
 	Switch $iError
 		Case $TOR_ERROR_GENERIC
 			GUI_LogOut("Cannot find Tor!")
