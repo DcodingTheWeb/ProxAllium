@@ -417,14 +417,12 @@ Func Tor_Stop()
 		GUI_LogOut("but Tor is already stopped!")
 		Return True
 	EndIf
-	ProcessClose($g_aTorProcess[$TOR_PROCESS_PID])
+	_Tor_Stop($g_aTorProcess)
 	If @error Then
-		Local $iError = @error
-		GUI_LogOut("Failed to stop Tor (Error Code: " & @error & ')')
+		Local $iError = @extended
+		GUI_LogOut("Failed to stop Tor (Error Code: " & $iError & ')')
 		Return SetError($iError, 0, False)
 	EndIf
-	$g_aTorProcess[$TOR_PROCESS_PID] = 0
-	_Process_CloseHandle($g_aTorProcess[$TOR_PROCESS_HANDLE])
 	TrayItemSetText($g_idTrayToggleTor, "Start Tor")
 	GUICtrlSetData($g_idMainGUI_ToggleButton, "Start")
 	GUICtrlSetState($g_idMainGUI_ToggleButton, $GUI_ENABLE)
