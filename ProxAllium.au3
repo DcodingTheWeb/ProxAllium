@@ -162,6 +162,7 @@ Core_Idle()
 #EndRegion Main Script
 
 #Region Functions
+
 #Region GUI Handlers Functions
 Func GUI_MainWindowExit()
 	Local $iMsgBoxFlags = $MB_YESNO + $MB_ICONQUESTION
@@ -440,4 +441,5 @@ Func Tor_Toggle()
 	EndIf
 EndFunc
 #EndRegion Tor Functions
+
 #EndRegion Functions
