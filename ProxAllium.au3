@@ -77,7 +77,7 @@ Func GUI_CreateMainWindow()
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	GUICtrlCreateGroup("Tor Details", 5, 125, 570, 64)
 	GUICtrlCreateLabel("Tor PID:", 10, 144, 60, 15)
-	Global $g_idMainGUI_TorPID = GUICtrlCreateInput('N/A', 73, 139, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	Global $g_idMainGUI_TorPID = GUICtrlCreateInput('...', 73, 139, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	GUICtrlCreateLabel("Tor Version:", 10, 169, 60, 15)
 	Global $g_idMainGUI_TorVersion = GUICtrlCreateInput('...', 73, 164, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
@@ -224,11 +224,22 @@ Func Handle_TorOutput()
 			Next
 		Next
 	WEnd
-	$g_aTorProcess[$TOR_PROCESS_PID] = 0
 	Local $iExitCode = _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE])
 	GUI_SetStatus("Stopped")
-	GUI_LogOut("Tor exited with exit code: " & $iExitCode)
-	TrayTip("Tor has exited", "Tor has exited with exit code: " & $iExitCode, 10, $TIP_ICONASTERISK)
+	Local $bUnexpected = Not IsMgcNumPresent($GUI_DISABLE, GUICtrlGetState($g_idMainGUI_ToggleButton))
+	If $bUnexpected Then
+		_Tor_Stop($g_aTorProcess)
+		GUI_LogOut("Tor has exited unexpectedly with exit code: " & $iExitCode)
+		TrayTip("Tor exited unexpectedly!", "Tor has exited with exit code: " & $iExitCode, 10, $TIP_ICONEXCLAMATION)
+	Else
+		GUICtrlSetState($g_idMainGUI_ToggleButton, $GUI_ENABLE)
+		GUI_LogOut("Tor exited with exit code: " & $iExitCode)
+		TrayTip("Tor has exited", "Tor has exited with exit code: " & $iExitCode, 10, $TIP_ICONASTERISK + $TIP_NOSOUND)
+	EndIf
+	TrayItemSetText($g_idTrayToggleTor, "Start Tor")
+	GUICtrlSetData($g_idMainGUI_ToggleButton, "Start")
+	GUICtrlSetData($g_idMainGUI_TorPID, '...')
+	GUICtrlSetData($g_idTorOutput, "") ; Reset the Tor Output
 EndFunc
 
 Func Handle_WarningAndError(ByRef $aTorOutput)
@@ -424,11 +435,6 @@ Func Tor_Stop()
 		GUI_LogOut("Failed to stop Tor (Error Code: " & $iError & ')')
 		Return SetError($iError, 0, False)
 	EndIf
-	TrayItemSetText($g_idTrayToggleTor, "Start Tor")
-	GUICtrlSetData($g_idMainGUI_ToggleButton, "Start")
-	GUICtrlSetState($g_idMainGUI_ToggleButton, $GUI_ENABLE)
-	GUICtrlSetData($g_idMainGUI_TorPID, 'N/A')
-	GUICtrlSetData($g_idTorOutput, "") ; Reset the Tor Output
 	GUI_LogOut("Successfully stopped Tor!")
 	Return True
 EndFunc
