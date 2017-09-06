@@ -51,6 +51,7 @@ TrayItemSetOnEvent($g_idTrayToggleTor, "Tor_Toggle")
 TrayCreateItem("")
 TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_MainWindowExit")
 TraySetState($TRAY_ICONSTATE_SHOW)
+TraySetToolTip("ProxAllium")
 #EndRegion Tray Creation
 
 #Region GUI Creation
