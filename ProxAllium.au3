@@ -61,9 +61,16 @@ GUI_LogOut("Starting ProxAllium... Please wait :)")
 GUI_CreateTorOutputWindow()
 
 Func GUI_CreateMainWindow()
-	Global $g_hMainGUI = GUICreate("ProxAllium", 580, 350)
+	Global $g_hMainGUI = GUICreate("ProxAllium", 580, 370)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_MainWindowExit", $g_hMainGUI)
 	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleMainWindow", $g_hMainGUI)
+	GUICtrlCreateMenu("ProxAllium")
+	GUICtrlSetState(-1, $GUI_DISABLE)
+	Local $idMenuView = GUICtrlCreateMenu("View")
+	GUICtrlCreateMenuItem("Hide Main Window", $idMenuView)
+	GUICtrlSetOnEvent(-1, "GUI_ToggleMainWindow")
+	Global $g_idMainGUI_MenuToggleTorOutput = GUICtrlCreateMenuItem("Show Tor Output", $idMenuView)
+	GUICtrlSetOnEvent(-1, "GUI_ToggleTorOutputWindow")
 	GUICtrlCreateGroup("Proxy Details", 5, 5, 570, 117)
 	GUICtrlCreateLabel("Hostname:", 10, 27, 60, 15)
 	Global $g_idMainGUI_Hostname = GUICtrlCreateInput("localhost", 73, 22, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
@@ -180,11 +187,17 @@ Func GUI_ToggleTorOutputWindow()
 	Local Static $bHidden = True
 	If $bHidden Then
 		$bHidden = Not (GUISetState(@SW_SHOWNORMAL, $g_hTorGUI) = 1)
-		If Not $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Hide Tor Output")
+		If Not $bHidden Then
+			TrayItemSetText($g_idTrayTorOutputToggle, "Hide Tor Output")
+			GUICtrlSetData($g_idMainGUI_MenuToggleTorOutput, "Hide Tor Output")
+		EndIf
 		Return
 	EndIf
 	$bHidden = (GUISetState(@SW_HIDE, $g_hTorGUI) = 1)
-	If $bHidden Then TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
+	If $bHidden Then
+		TrayItemSetText($g_idTrayTorOutputToggle, "Show Tor Output")
+		GUICtrlSetData($g_idMainGUI_MenuToggleTorOutput, "Show Tor Output")
+	EndIf
 EndFunc
 
 Func GUI_ToggleMainWindow()
