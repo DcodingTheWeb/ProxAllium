@@ -1,5 +1,23 @@
 = Changelog
 
+== Current version in development
+.Additions
+* **New GUI** with buttons, text fields, menubar, status indicator etc.
+* Added "Hostname"
+* Added Tray Tips (ProxAllium will notify you about Tor)
+* Added multi-instance detection (ProxAllium will detect if it is already running)
+
+.Fixes and changes
+* Closing the Tor Output window will no longer prompt to stop Tor
+* AsciiDoc is used instead of Markdown
+* Fixed crashing if Tor was not initialized properly
+* Tor is handled better internally (ProxAllium can detect crashes now)
+* `config.ini` uses relative paths instead of absolute paths which can cause problems in a portable environment (Fixes https://github.com/DcodingTheWeb/ProxAllium/issues/1[#1])
+* More minor internal changes
+
+.Changes independent of ProxAllium's code
+* New website with documentation, screenshots, webchat etc!
+
 == v0.2-alpha (Featury Feast)
 .Additions
 * `ProxAllium.exe` now has its Product Version property filled
