@@ -1,2 +1,23 @@
 = Changelog
 
+== v0.2-alpha (Featury Feast)
+.Additions
+* `ProxAllium.exe` now has its Product Version property filled
+* Added ability to show Error/Warning messages made by Tor
+* Added ability to Stop/Start Tor without restarting ProxAllium!
+* Added ability to auto-generate `config.ini` (Therefore there is no need to pack `config.ini` in the release packages)
+* Added support for HTTP(S) and SOCKS4/5 proxies (No GUI yet to configure these though)
+
+.Fixes and changes
+* **Fixed a lot of bugs** (including the bug where ProxAllium was not stopping Tor when exiting)
+* **Optimisation and cleanup**
+* Updated `README.md` and `CREDITS.md`
+* Changed the internal structure/workings/design of ProxAllium
+* Changed some text to be more meaningful
+* Changed Tor's data directories location (You can now delete the `data` directory in `Tor/data` if you are upgrading)
+* Tor Output Window no longer asks for confirmation if Tor has already exited
+* ProxAllium no longer prompts to exit after closing Tor
+
+(You can also https://github.com/DcodingTheWeb/ProxAllium/compare/v0.1-alpha...v0.2-alpha[view] the complete code changes across the previous release if you want)
+
+**EDIT (23-02-2017)**: Added PGP signature to the list of downloads, you can find Dcoding The Web's public key https://dcodingtheweb.com/key.asc[here].
