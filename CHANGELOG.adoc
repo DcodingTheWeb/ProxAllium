@@ -1,6 +1,8 @@
 = Changelog
 
-== Current version in development
+== v0.3-beta (GUI Goodness)
+Finally out of alpha! :)
+
 .Additions
 * **New GUI** with buttons, text fields, menubar, status indicator etc.
 * Added "Hostname"
