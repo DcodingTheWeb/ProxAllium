@@ -15,7 +15,7 @@ Finally out of alpha! :)
 * Fixed crashing if Tor was not initialized properly
 * Tor is handled better internally (ProxAllium can detect crashes now)
 * `config.ini` uses relative paths instead of absolute paths which can cause problems in a portable environment (Fixes https://github.com/DcodingTheWeb/ProxAllium/issues/1[#1])
-* UPX is no longer used to compile ProxAllium, this should reduce false positives.
+* UPX is no longer used to compile ProxAllium, this should reduce anti-virus false positives.
 * More minor internal changes
 
 .Changes independent of ProxAllium's code
