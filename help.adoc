@@ -20,6 +20,9 @@ The `7z` archive/package contains a folder called `ProxAllium` and within it, yo
 Now you can start using ProxAllium by executing `ProxAllium.exe`! Easy, isn't it?
 
 == Mailing List (Email Updates)
+
+CAUTION: *I am no longer actively posting to the mailing list, so I do not recommend anyone to register, sorry.*
+
 Now you can get e-mail notifications for new releases and updates from https://listengine.tuxfamily.org/proxallium.tuxfamily.org/news/[ProxAllium's Mailing List]!
 
 === Subscribing
