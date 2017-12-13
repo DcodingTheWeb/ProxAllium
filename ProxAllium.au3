@@ -33,6 +33,33 @@
 Handle_MultipleInstance()
 #EndRegion Multi-Instance Handler
 
+#Region Variable Initialization
+Global $g_aTorProcess[2]
+Global $g_aTorVersion[0]
+
+#Region Read Configuration
+Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
+
+Global $g_sTorPath = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "path", 'Tor\tor.exe'))
+Global $g_sTorConfigFile = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "config_file", 'config.torrc'))
+Global $g_sTorDataDirPath = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "data_dir", 'Tor Data'))
+Global $g_sTorGeoIPv4File = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "geoip4_file", 'Tor\geoip'))
+Global $g_sTorGeoIPv6File = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "geoip6_file", 'Tor\geoip6'))
+Global $g_iOutputPollInterval = Int(IniReadWrite($CONFIG_INI, "proxallium", "output_poll_interval", "100"))
+
+Global $g_sTorConfig_Port = IniReadWrite($CONFIG_INI, "tor_config", "port", "9050")
+Global $g_bTorConfig_OnlyLocalhost = (IniReadWrite($CONFIG_INI, "tor_config", "localhost_only", "true") = "true")
+Global $g_sTorConfig_ExitNodeCC = IniRead($CONFIG_INI, "tor_config", "exit_node_country_code", "")
+
+Global $g_sTorConfig_ProxyType = IniRead($CONFIG_INI, "proxy", "type", "")
+Global $g_sTorConfig_ProxyHost = IniRead($CONFIG_INI, "proxy", "host", "")
+Global $g_sTorConfig_ProxyPort = IniRead($CONFIG_INI, "proxy", "port", "")
+Global $g_sTorConfig_ProxyUser = IniRead($CONFIG_INI, "proxy", "user", "")
+Global $g_sTorConfig_ProxyPass = IniRead($CONFIG_INI, "proxy", "pass", "")
+#EndRegion Read Configuration
+
+#EndRegion Variable Initialization
+
 #Region Tray Creation
 Opt("TrayMenuMode", 1 + 2) ; No default menu and automatic checkmarks
 Opt("TrayOnEventMode", 1) ; OnEvent mode
@@ -132,33 +159,7 @@ Func GUI_CreateTorOutputWindow()
 EndFunc
 #EndRegion GUI Functions
 
-#Region Variable Initialization
-Global $g_aTorProcess[2]
-Global $g_aTorVersion[0]
-#EndRegion Variable Initialization
-
 #Region Main Script
-#Region Read Configuration
-Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
-
-Global $g_sTorPath = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "path", 'Tor\tor.exe'))
-Global $g_sTorConfigFile = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "config_file", 'config.torrc'))
-Global $g_sTorDataDirPath = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "data_dir", 'Tor Data'))
-Global $g_sTorGeoIPv4File = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "geoip4_file", 'Tor\geoip'))
-Global $g_sTorGeoIPv6File = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "geoip6_file", 'Tor\geoip6'))
-Global $g_iOutputPollInterval = Int(IniReadWrite($CONFIG_INI, "proxallium", "output_poll_interval", "100"))
-
-Global $g_sTorConfig_Port = IniReadWrite($CONFIG_INI, "tor_config", "port", "9050")
-Global $g_bTorConfig_OnlyLocalhost = (IniReadWrite($CONFIG_INI, "tor_config", "localhost_only", "true") = "true")
-Global $g_sTorConfig_ExitNodeCC = IniRead($CONFIG_INI, "tor_config", "exit_node_country_code", "")
-
-Global $g_sTorConfig_ProxyType = IniRead($CONFIG_INI, "proxy", "type", "")
-Global $g_sTorConfig_ProxyHost = IniRead($CONFIG_INI, "proxy", "host", "")
-Global $g_sTorConfig_ProxyPort = IniRead($CONFIG_INI, "proxy", "port", "")
-Global $g_sTorConfig_ProxyUser = IniRead($CONFIG_INI, "proxy", "user", "")
-Global $g_sTorConfig_ProxyPass = IniRead($CONFIG_INI, "proxy", "pass", "")
-#EndRegion Read Configuration
-
 If Not FileExists($g_sTorConfigFile) Then
 	GUI_LogOut("Cannot find Tor configuration file, generating one now... ", False)
 	Core_GenTorrc()
