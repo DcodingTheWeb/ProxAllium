@@ -56,6 +56,9 @@ Global $g_sTorConfig_ProxyHost = IniRead($CONFIG_INI, "proxy", "host", "")
 Global $g_sTorConfig_ProxyPort = IniRead($CONFIG_INI, "proxy", "port", "")
 Global $g_sTorConfig_ProxyUser = IniRead($CONFIG_INI, "proxy", "user", "")
 Global $g_sTorConfig_ProxyPass = IniRead($CONFIG_INI, "proxy", "pass", "")
+
+Global $g_bTorConfig_BridgesEnabled = (IniRead($CONFIG_INI, "bridges", "enabled", "false") = "true")
+Global $g_sTorConfig_BridgesPath = _WinAPI_GetFullPathName(IniRead($CONFIG_INI, "bridges", "path", $g_sTorDataDirPath & '\bridges.txt'))
 #EndRegion Read Configuration
 
 #EndRegion Variable Initialization
@@ -87,6 +90,7 @@ Opt("GUIOnEventMode", 1)
 GUI_CreateMainWindow()
 GUI_LogOut("Starting ProxAllium... Please wait :)")
 GUI_CreateTorOutputWindow()
+GUI_CreateBridges()
 
 Func GUI_CreateMainWindow()
 	Global $g_hMainGUI = GUICreate("ProxAllium", 580, 370)
@@ -100,6 +104,8 @@ Func GUI_CreateMainWindow()
 	Global $g_idMainGUI_MenuToggleTorOutput = GUICtrlCreateMenuItem("Show Tor Output", $idMenuView)
 	GUICtrlSetOnEvent(-1, "GUI_ToggleTorOutputWindow")
 	Local $idMenuOptions = GUICtrlCreateMenu("Options")
+	Global $g_idMainGUI_MenuBridges = GUICtrlCreateMenuItem("Bridges", $idMenuOptions)
+	GUICtrlSetOnEvent(-1, "GUI_BridgeHandler")
 	GUICtrlCreateGroup("Proxy Details", 5, 5, 570, 117)
 	GUICtrlCreateLabel("Hostname:", 10, 27, 60, 15)
 	Global $g_idMainGUI_Hostname = GUICtrlCreateInput("localhost", 73, 22, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
@@ -157,6 +163,28 @@ Func GUI_CreateTorOutputWindow()
 	Local Const $iGrayCmdColor = _ColorSetRGB($aGrayCmdColor) ; Get the RGB code of CMD Text Color
 	GUICtrlSetColor($g_idTorOutput, $iGrayCmdColor)
 EndFunc
+
+Func GUI_CreateBridges()
+	Global $g_hBridgesGUI = GUICreate("Bridges", 515, 245, -1, -1, -1, -1, $g_hMainGUI)
+	GUISetOnEvent($GUI_EVENT_CLOSE, GUI_BridgeHandler, $g_hBridgesGUI)
+	GUICtrlCreateLabel("Bridges Status: ", 5, 13, 78, 17)
+	Global $g_idBridgeStatus = GUICtrlCreateLabel("", 78, 13, 47, 17)
+	Global $g_idBridgesToggle = GUICtrlCreateButton("", 128, 4, 59, 24)
+	Global $g_idBridgesSave = GUICtrlCreateButton("Save", 411, 4, 100, 24)
+	Global $g_idBridgesEdit = GUICtrlCreateEdit("", 5, 32, 505, 208)
+
+	GUICtrlSetFont($g_idBridgeStatus, 8.5, $FW_BOLD)
+	GUICtrlSetFont($g_idBridgesEdit, 9, Default, Default, "Consolas")
+
+	GUICtrlSetOnEvent($g_idBridgesToggle, GUI_BridgeHandler)
+	GUICtrlSetOnEvent($g_idBridgesSave, GUI_BridgeHandler)
+
+	Local $sBridges = FileRead($g_sTorConfig_BridgesPath)
+	If Not @error Then GUICtrlSetData($g_idBridgesEdit, $sBridges)
+	GUICtrlSetTip($g_idBridgesEdit, "Paste your bridge lines here (one per line)", "Bridges", $TIP_INFOICON)
+
+	GUI_BridgeHandler($g_idBridgesToggle) ; Initialize the GUI
+EndFunc
 #EndRegion GUI Functions
 
 #Region Main Script
@@ -212,6 +240,53 @@ Func GUI_ToggleMainWindow()
 	EndIf
 	$bHidden = (GUISetState(@SW_HIDE, $g_hMainGUI) = 1)
 	If $bHidden Then TrayItemSetText($g_idTrayMainWinToggle, "Show Main Window")
+EndFunc
+
+Func GUI_BridgeHandler($iCtrlID = Default)
+	Local Static $bNotInitialized = True
+	If $bNotInitialized Then
+		$g_bTorConfig_BridgesEnabled = ($g_bTorConfig_BridgesEnabled ? False : True)
+		$bNotInitialized = False
+	EndIf
+	Local Static $bModified
+	Switch (IsDeclared("iCtrlID") = $DECLARED_LOCAL ? $iCtrlID : @GUI_CtrlId)
+		Case $GUI_EVENT_CLOSE
+			If $bModified Or (_GUICtrlEdit_GetModify($g_idBridgesEdit)) Then
+				If MsgBox($MB_ICONQUESTION + $MB_YESNO + $MB_DEFBUTTON2, "Unsaved changes", "You have made some changes, are you sure that you want to exit without saving them to disk?") = $IDNO Then Return
+			EndIf
+			GUISetState(@SW_HIDE, $g_hBridgesGUI)
+		Case $g_idMainGUI_MenuBridges
+			_GUICtrlEdit_SetModify($g_idBridgesEdit, False)
+			$bModified = False
+			GUISetState(@SW_SHOW, $g_hBridgesGUI)
+		Case $g_idBridgesToggle
+			$bModified = True
+			If $g_bTorConfig_BridgesEnabled Then
+				$g_bTorConfig_BridgesEnabled = False
+				GUICtrlSetData($g_idBridgeStatus, "Disabled")
+				GUICtrlSetData($g_idBridgesToggle, "Enable")
+				GUICtrlSetColor($g_idBridgeStatus, $COLOR_RED)
+			Else
+				$g_bTorConfig_BridgesEnabled = True
+				GUICtrlSetData($g_idBridgeStatus, "Enabled")
+				GUICtrlSetData($g_idBridgesToggle, "Disable")
+				GUICtrlSetColor($g_idBridgeStatus, $COLOR_GREEN)
+			EndIf
+		Case $g_idBridgesSave
+			Local $hFile = FileOpen($g_sTorConfig_BridgesPath, $FO_OVERWRITE + $FO_CREATEPATH)
+			If $hFile = -1 Then
+				MsgBox($MB_ICONERROR, "Failed to open", "Failed to open/create the bridges files for writing!")
+				Return
+			EndIf
+			If FileWrite($hFile, GUICtrlRead($g_idBridgesEdit)) = 0 Then
+				MsgBox($MB_ICONERROR, "Failed to write", "Failed to write to the bridges files!")
+				Return
+			EndIf
+			$bModified = False
+			_GUICtrlEdit_SetModify($g_idBridgesEdit, False)
+			IniWrite($CONFIG_INI, "bridges", "enabled", StringLower($g_bTorConfig_BridgesEnabled))
+			MsgBox($MB_ICONINFORMATION, "Saved", "Settings for bridges have been save successfully!")
+	EndSwitch
 EndFunc
 #EndRegion GUI Handlers
 
@@ -370,6 +445,15 @@ Func Core_GenTorrc()
 		FileWriteLine($hTorrc, '## Country of the Exit Node')
 		FileWriteLine($hTorrc, 'ExitNodes {' & $g_sTorConfig_ExitNodeCC & '}')
 		FileWriteLine($hTorrc, "StrictNodes 1")
+		FileWriteLine($hTorrc, "")
+	EndIf
+	If $g_bTorConfig_BridgesEnabled Then
+		FileWriteLine($hTorrc, '## Bridges')
+		FileWriteLine($hTorrc, 'UseBridges 1')
+		Local $aBridges = StringSplit(StringStripCR(GUICtrlRead($g_idBridgesEdit)), @LF)
+		For $iBridge = 1 To $aBridges[0]
+			FileWriteLine($hTorrc, 'Bridge ' & $aBridges[$iBridge])
+		Next
 		FileWriteLine($hTorrc, "")
 	EndIf
 	FileWriteLine($hTorrc, '###########################################################')
