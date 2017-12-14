@@ -106,6 +106,9 @@ Func GUI_CreateMainWindow()
 	Local $idMenuOptions = GUICtrlCreateMenu("Options")
 	Global $g_idMainGUI_MenuBridges = GUICtrlCreateMenuItem("Bridges", $idMenuOptions)
 	GUICtrlSetOnEvent(-1, "GUI_BridgeHandler")
+	GUICtrlCreateMenuItem("", $idMenuOptions)
+	Global $g_idMainGUI_MenuRegenConfig = GUICtrlCreateMenuItem("Regenerate Tor configuration", $idMenuOptions)
+	GUICtrlSetOnEvent(-1, "GUI_RegenerateTorrc")
 	GUICtrlCreateGroup("Proxy Details", 5, 5, 570, 117)
 	GUICtrlCreateLabel("Hostname:", 10, 27, 60, 15)
 	Global $g_idMainGUI_Hostname = GUICtrlCreateInput("localhost", 73, 22, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
@@ -287,6 +290,21 @@ Func GUI_BridgeHandler($iCtrlID = Default)
 			IniWrite($CONFIG_INI, "bridges", "enabled", StringLower($g_bTorConfig_BridgesEnabled))
 			MsgBox($MB_ICONINFORMATION, "Saved", "Settings for bridges have been save successfully!")
 	EndSwitch
+EndFunc
+
+Func GUI_RegenerateTorrc()
+	GUI_LogOut("Regenerating Tor configuration... ", False)
+	Core_GenTorrc()
+	If @error Then
+		GUI_LogOut("Failed! (Error Code: " & @error & ')')
+	Else
+		GUI_LogOut("Done!")
+		Local $sMessage = "ProxAllium has generated a new configuration, do you want to restart Tor make the changes take effect?"
+		If IsTorRunning() And MsgBox($MB_ICONQUESTION + $MB_YESNO, "Do you want to restart Tor?", $sMessage) = $IDYES Then
+			Tor_Stop()
+			Tor_Start()
+		EndIf
+	EndIf
 EndFunc
 #EndRegion GUI Handlers
 
