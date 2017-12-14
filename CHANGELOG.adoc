@@ -1,5 +1,11 @@
 = Changelog
 
+== Changes in future versions
+Any changes listed here will be incorporated into the next future release
+
+.Fixed and changes
+* Tor Output now resets after starting Tor instead of resetting everytime Tor stops or crahses
+
 == v0.3-beta (GUI Goodness)
 Finally out of alpha! :)
 

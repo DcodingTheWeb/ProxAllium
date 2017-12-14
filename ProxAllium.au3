@@ -257,7 +257,6 @@ Func Handle_TorOutput()
 	TrayItemSetText($g_idTrayToggleTor, "Start Tor")
 	GUICtrlSetData($g_idMainGUI_ToggleButton, "Start")
 	GUICtrlSetData($g_idMainGUI_TorPID, '...')
-	GUICtrlSetData($g_idTorOutput, "") ; Reset the Tor Output
 EndFunc
 
 Func Handle_WarningAndError(ByRef $aTorOutput)
@@ -436,6 +435,7 @@ Func Tor_Start()
 	GUI_SetStatus("Waiting for Tor...")
 	GUI_LogOut("Started Tor with PID: " & $g_aTorProcess[$TOR_PROCESS_PID])
 	GUICtrlSetData($g_idMainGUI_TorPID, $g_aTorProcess[$TOR_PROCESS_PID])
+	GUICtrlSetData($g_idTorOutput, "") ; Reset the Tor Output
 	Return True
 EndFunc
 
