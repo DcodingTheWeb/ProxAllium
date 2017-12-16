@@ -470,7 +470,7 @@ Func Core_GenTorrc()
 		FileWriteLine($hTorrc, 'UseBridges 1')
 		Local $aBridges = StringSplit(StringStripCR(GUICtrlRead($g_idBridgesEdit)), @LF)
 		For $iBridge = 1 To $aBridges[0]
-			FileWriteLine($hTorrc, 'Bridge ' & $aBridges[$iBridge])
+			If Not StringIsSpace($aBridges[$iBridge]) Then FileWriteLine($hTorrc, 'Bridge ' & $aBridges[$iBridge]) ; Skip blank lines
 		Next
 		FileWriteLine($hTorrc, "")
 	EndIf
