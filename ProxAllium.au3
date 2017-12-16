@@ -24,7 +24,6 @@
 #include <MsgBoxConstants.au3>
 #include <StringConstants.au3>
 #include <TrayConstants.au3>
-#include <WinAPIFiles.au3>
 #include "Tor.au3"
 #include "IniReadWrite.au3"
 #EndRegion Includes
@@ -40,11 +39,11 @@ Global $g_aTorVersion[0]
 #Region Read Configuration
 Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 
-Global $g_sTorPath = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "path", 'Tor\tor.exe'))
-Global $g_sTorConfigFile = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "config_file", 'config.torrc'))
-Global $g_sTorDataDirPath = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "data_dir", 'Tor Data'))
-Global $g_sTorGeoIPv4File = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "geoip4_file", 'Tor\geoip'))
-Global $g_sTorGeoIPv6File = _WinAPI_GetFullPathName(IniReadWrite($CONFIG_INI, "tor", "geoip6_file", 'Tor\geoip6'))
+Global $g_sTorPath = IniReadWrite($CONFIG_INI, "tor", "path", 'Tor\tor.exe')
+Global $g_sTorConfigFile = IniReadWrite($CONFIG_INI, "tor", "config_file", 'config.torrc')
+Global $g_sTorDataDirPath = IniReadWrite($CONFIG_INI, "tor", "data_dir", 'Tor Data')
+Global $g_sTorGeoIPv4File = IniReadWrite($CONFIG_INI, "tor", "geoip4_file", 'Tor\geoip')
+Global $g_sTorGeoIPv6File = IniReadWrite($CONFIG_INI, "tor", "geoip6_file", 'Tor\geoip6')
 Global $g_iOutputPollInterval = Int(IniReadWrite($CONFIG_INI, "proxallium", "output_poll_interval", "100"))
 
 Global $g_sTorConfig_Port = IniReadWrite($CONFIG_INI, "tor_config", "port", "9050")
@@ -58,7 +57,7 @@ Global $g_sTorConfig_ProxyUser = IniRead($CONFIG_INI, "proxy", "user", "")
 Global $g_sTorConfig_ProxyPass = IniRead($CONFIG_INI, "proxy", "pass", "")
 
 Global $g_bTorConfig_BridgesEnabled = (IniRead($CONFIG_INI, "bridges", "enabled", "false") = "true")
-Global $g_sTorConfig_BridgesPath = _WinAPI_GetFullPathName(IniRead($CONFIG_INI, "bridges", "path", $g_sTorDataDirPath & '\bridges.txt'))
+Global $g_sTorConfig_BridgesPath = IniRead($CONFIG_INI, "bridges", "path", $g_sTorDataDirPath & '\bridges.txt')
 #EndRegion Read Configuration
 
 #EndRegion Variable Initialization

@@ -9,6 +9,7 @@ Any changes listed here will be incorporated into the next future release
 
 .Fixed and changes
 * Tor Output now resets after starting Tor instead of resetting everytime Tor stops or crahses
+* Paths from config (`config.ini`) are no longer converted to absolute paths internally, this prevents use of absolute paths in the generate `torrc` file which may cause portability issues
 
 == v0.3-beta (GUI Goodness)
 Finally out of alpha! :)
