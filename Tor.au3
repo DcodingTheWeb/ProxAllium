@@ -29,9 +29,10 @@ Global Const $TOR_ERROR_GENERIC = 1 ; Reserved for generic errors.
 Global Const $TOR_ERROR_PROCESS = 2 ; Error related to Tor.exe's process.
 Global Const $TOR_ERROR_VERSION = 3 ; Error related to version.
 Global Const $TOR_ERROR_CONFIG = 4 ; Error related to configuration.
+Global Const $TOR_ERROR_NETWORK = 5 ; Error related to networking (TCP).
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT ; Associated with $aTorVersion returned by _Tor_CheckVersion
-Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE ; Associated with $aTorProcess returned by _Tor_Start
+Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE, $TOR_PROCESS_SOCKET ; Associated with $aTorProcess returned by _Tor_Start
 Global Enum $TOR_FIND_VERSION, $TOR_FIND_PATH ; Associated with $aList returned by _Tor_Find
 Global Enum $TOR_FIND_TORLIST, $TOR_FIND_GEOIP, $TOR_FIND_GEOIP6 ; Associated with arrays found inside $aList returned by _Tor_Find
 ; ===============================================================================================================================
@@ -39,6 +40,9 @@ Global Enum $TOR_FIND_TORLIST, $TOR_FIND_GEOIP, $TOR_FIND_GEOIP6 ; Associated wi
 ; #VARIABLES# ===================================================================================================================
 Global $g__sTorPath = "" ; Path to Tor.exe
 ; ===============================================================================================================================
+
+TCPStartup()
+OnAutoItExitRegister(__Tor_OnExitTCPShutdown)
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Tor_CheckVersion
@@ -63,6 +67,45 @@ Func _Tor_CheckVersion($sTorPath = $g__sTorPath)
 	Local $aTorVersion = StringRegExp($sOutput, '([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*) \(git-([a-z0-9]{16})\)', $STR_REGEXPARRAYFULLMATCH)
 	If @error Then Return SetError($TOR_ERROR_VERSION, @error, False)
 	Return $aTorVersion
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Controller_Connect
+; Description ...: Connect to Tor's TCP controller interface
+; Syntax ........: _Tor_Controller_Connect(Byref $aTorProcess, $iPort[, $sAddress = '127.0.0.1'])
+; Parameters ....: $aTorProcess         - [in/out] $aTorProcess from _Tor_Start.
+;                  $iPort               - The port where the controller interface is listening.
+;                  $sAddress            - [optional] IP Address of the host. Default is '127.0.0.1'.
+; Return values .: Success: True
+;                  Failure: False and @error is set to TCPConnect's @error
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: Autentication should be done before beginning the communication
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Controller_Connect(ByRef $aTorProcess, $iPort, $sAddress = '127.0.0.1')
+	Local $iSocket = TCPConnect($sAddress, $iPort)
+	If @error Then Return SetError(@error, 0, False)
+	$aTorProcess[$TOR_PROCESS_SOCKET] = $iSocket
+	Return True
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Controller_SendRaw
+; Description ...: Send raw commands to the controller interface
+; Syntax ........: _Tor_Controller_SendRaw($aTorProcess, $sRawCommand[, $bAutoCRLF = True])
+; Parameters ....: $aTorProcess         - $aTorProcess from _Tor_Start.
+;                  $sRawCommand         - The string containing the raw command, CRLF is optional by default.
+;                  $bAutoCRLF           - [optional] If True, CRLF is automatically appended before sending the command. Default is True.
+; Return values .: Success: True
+;                  Failure: False and @error is set to $TOR_ERROR_NETWORK & @extended is set to TCPSend's @error
+; Author ........: Damon Harris (TheDcoder)
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Controller_SendRaw($aTorProcess, $sRawCommand, $bAutoCRLF = True)
+	If $bAutoCRLF Then $sRawCommand &= @CRLF
+	TCPSend($aTorProcess[$TOR_PROCESS_SOCKET], $sRawCommand)
+	If @error Then Return SetError($TOR_ERROR_NETWORK, @error, False)
+	Return True
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
@@ -165,12 +208,13 @@ EndFunc
 ; Remarks .......: $aTorProcess's Format:
 ;                  $aTorProcess[$TOR_PROCESS_HANDLE] - Contains the process handle of tor.exe
 ;                  $aTorProcess[$TOR_PROCESS_PID]    - Contains the PID of tor.exe
+;                  $aTorProcess[$TOR_PROCESS_SOCKET] - Reserved for the TCP socket, used by _Tor_Controller functions
 ; Example .......: No
 ; ===============================================================================================================================
 Func _Tor_Start($sConfig)
 	_Tor_VerifyConfig($sConfig)
 	If @error Then Return SetError($TOR_ERROR_CONFIG, @error, False)
-	Local $aTorProcess[2]
+	Local $aTorProcess[3]
 	Local $sCommand = '"' & $g__sTorPath & '" --allow-missing-torrc --defaults-torrc "" -f "' & $sConfig & '"'
 	$aTorProcess[$TOR_PROCESS_HANDLE] = _Process_RunCommand($PROCESS_RUN, $sCommand, @ScriptDir)
 	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, $sCommand)
@@ -219,4 +263,8 @@ Func _Tor_VerifyConfig($sConfig)
 	Local $aOutput = StringSplit(StringStripWS($sOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
 	If $aOutput[$aOutput[0]] = "Configuration was valid" Then Return True
 	Return SetError($TOR_ERROR_CONFIG, 0, False)
+EndFunc
+
+Func __Tor_OnExitTCPShutdown()
+	TCPShutdown()
 EndFunc
