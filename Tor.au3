@@ -109,6 +109,32 @@ Func _Tor_Controller_SendRaw($aTorProcess, $sRawCommand, $bAutoCRLF = True)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Controller_WaitForMsg
+; Description ...:
+; Syntax ........: _Tor_Controller_WaitForMsg(Byref $aTorProcess[, $iTimeout = 0[, $bTrimCRLF = True]])
+; Parameters ....: $aTorProcess         - [in/out] $aTorProcess from _Tor_Start.
+;                  $iTimeout            - [optional] Timeout in milliseconds. Default is 0 (no timeout).
+;                  $bTrimCRLF           - [optional] Trim the trailing CRLF in the message. Default is True.
+; Return values .: Success: $sMessage
+;                  Failure: $sMessage (can be blank or contain partial content) and @error is set to:
+;                           $TOR_ERROR_NETWORK - If TCPRecv set an error, @extended is set to TCPRecv's @error
+;                           $TOR_ERROR_GENERIC - If $iTimeout is reached
+; Author ........: Damon Harris (TheDcoder)
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Controller_WaitForMsg(ByRef $aTorProcess, $iTimeout = 0, $bTrimCRLF = True)
+	Local $sMessage
+	If $iTimeout > 0 Then Local $hTimer = TimerInit()
+	Do
+		$sMessage &= TCPRecv($aTorProcess[$TOR_PROCESS_SOCKET], 2)
+		If @error Then Return SetError($TOR_ERROR_NETWORK, @error, $sMessage)
+		If ($iTimeout > 0) And (TimerDiff($hTimer) >= $iTimeout) Then Return SetError($TOR_ERROR_GENERIC, 0, $sMessage)
+		Sleep(10)
+	Until (StringRight($sMessage, 2) = @CRLF)
+	Return ($bTrimCRLF ? StringTrimRight($sMessage, 2) : $sMessage)
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Tor_Find
 ; Description ...: Lists the tor executables and geoip files.
 ; Syntax ........: _Tor_Find($vFolders)
