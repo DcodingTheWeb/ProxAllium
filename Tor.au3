@@ -55,13 +55,18 @@ Global $g__sTorPath = "" ; Path to Tor.exe
 ; Author ........: Damon Harris (TheDcoder)
 ; Remarks .......: $TOR_VERSION Format : x.x.x.x (git-a1b2c3d4e5f6g7h8)
 ;                               Example: 0.2.9.10 (git-1f6c8eda0073f464)
+;                  The git hash may not be present at all times.
 ; Example .......: No
 ; ===============================================================================================================================
 Func _Tor_CheckVersion($sTorPath = $g__sTorPath)
 	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, $sTorPath & ' --version')
 	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
-	Local $aTorVersion = StringRegExp($sOutput, '([0-9]*\.[0-9]*\.[0-9]*\.[0-9]*) \(git-([a-z0-9]{16})\)', $STR_REGEXPARRAYFULLMATCH)
+	Local $aTorVersion[3]
+	Local $aRegEx = StringRegExp($sOutput, '(\d*\.\d*\.\d*\.\d*)(?: \(git-([a-z0-9]{16})\))?', $STR_REGEXPARRAYFULLMATCH)
 	If @error Then Return SetError($TOR_ERROR_VERSION, @error, False)
+	$aTorVersion[$TOR_VERSION] = $aRegEx[0]
+	$aTorVersion[$TOR_VERSION_NUMBER] = $aRegEx[1]
+	If UBound($aRegEx) = 3 Then $aTorVersion[$TOR_VERSION_GIT] = $aRegEx[2]
 	Return $aTorVersion
 EndFunc
 
