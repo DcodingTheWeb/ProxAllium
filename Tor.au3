@@ -16,16 +16,17 @@
 ; ===============================================================================================================================
 
 ; #CURRENT# =====================================================================================================================
-; _Tor_CheckVersion            - Check the version of Tor.
-; _Tor_Controller_Authenticate - Authenticate with the Tor controller
-; _Tor_Controller_Connect      - Connect to Tor's TCP controller interface
-; _Tor_Controller_SendRaw      - Send raw commands to the controller interface
-; _Tor_Controller_WaitForMsg   - Wait for a message to arrive completely and get it
-; _Tor_Find                    - Lists the tor executables and geoip files.
-; _Tor_SetPath                 - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
-; _Tor_Start                   - Starts Tor
-; _Tor_Stop                    - Stops Tor
-; _Tor_VerifyConfig            - Check if the configuration is valid.
+; _Tor_CheckVersion                  - Check the version of Tor.
+; _Tor_Controller_Authenticate       - Authenticate with the Tor controller
+; _Tor_Controller_CheckReplyForError - Check for errors in a reply/response from the controller
+; _Tor_Controller_Connect            - Connect to Tor's TCP controller interface
+; _Tor_Controller_SendRaw            - Send raw commands to the controller interface
+; _Tor_Controller_WaitForMsg         - Wait for a message to arrive completely and get it
+; _Tor_Find                          - Lists the tor executables and geoip files.
+; _Tor_SetPath                       - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
+; _Tor_Start                         - Starts Tor
+; _Tor_Stop                          - Stops Tor
+; _Tor_VerifyConfig                  - Check if the configuration is valid.
 ; ===============================================================================================================================
 
 ; #CONSTANTS# ===================================================================================================================
@@ -104,6 +105,32 @@ Func _Tor_Controller_Authenticate(ByRef $aTorProcess, $iMethod = $TOR_CONTROLLER
 	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
 	If $sResponse = "250 OK" Then Return True
 	Return SetError($TOR_ERROR_CONTROLLER, 0, $sResponse)
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Controller_CheckReplyForError
+; Description ...: Check for errors in a reply/response from the controller
+; Syntax ........: _Tor_Controller_CheckReplyForError($sReply)
+; Parameters ....: $sReply              - The reply or response from the controller server.
+; Return values .: Success: True
+;                  Failure: False and @error set to $TOR_ERROR_GENERIC, @extended is set to 1 if error is fatal.
+;                  Special: @extended is set to 2 and @error is not set, this happens if the status is unknown.
+; Author ........: Damon Harris (TheDcoder)
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Controller_CheckReplyForError($sReply)
+	Local $aReply = StringSplit($sReply, ' ')
+	Local $sStatusCode = $aReply[1]
+	Switch StringLeft($sStatusCode, 1)
+		Case "2" ; All OK
+			Return True
+		Case "4" ; Temporary Negative (Non-fatal error)
+			Return SetError($TOR_ERROR_GENERIC, 0, False)
+		Case "5" ; Permanent Negetive (Fatal error)
+			Return SetError($TOR_ERROR_GENERIC, 1, False)
+		Case Else ; Unknown error status (error???)
+			Return SetExtended(2, False)
+	EndSwitch
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
