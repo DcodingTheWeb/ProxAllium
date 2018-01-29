@@ -103,7 +103,8 @@ Func _Tor_Controller_Authenticate(ByRef $aTorProcess, $iMethod = $TOR_CONTROLLER
 	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
 	Local $sResponse = _Tor_Controller_WaitForMsg($aTorProcess)
 	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
-	If $sResponse = "250 OK" Then Return True
+	_Tor_Controller_CheckReplyForError($sResponse)
+	If Not @error Then Return True
 	Return SetError($TOR_ERROR_CONTROLLER, 0, $sResponse)
 EndFunc
 
