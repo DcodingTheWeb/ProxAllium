@@ -16,12 +16,16 @@
 ; ===============================================================================================================================
 
 ; #CURRENT# =====================================================================================================================
-; _Tor_CheckVersion - Check the version of Tor.
-; _Tor_Find         - Lists the tor executables and geoip files.
-; _Tor_SetPath      - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
-; _Tor_Start        - Starts Tor
-; _Tor_Stop         - Stops Tor
-; _Tor_VerifyConfig - Check if the configuration is valid.
+; _Tor_CheckVersion            - Check the version of Tor.
+; _Tor_Controller_Authenticate - Authenticate with the Tor controller
+; _Tor_Controller_Connect      - Connect to Tor's TCP controller interface
+; _Tor_Controller_SendRaw      - Send raw commands to the controller interface
+; _Tor_Controller_WaitForMsg   - Wait for a message to arrive completely and get it
+; _Tor_Find                    - Lists the tor executables and geoip files.
+; _Tor_SetPath                 - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
+; _Tor_Start                   - Starts Tor
+; _Tor_Stop                    - Stops Tor
+; _Tor_VerifyConfig            - Check if the configuration is valid.
 ; ===============================================================================================================================
 
 ; #CONSTANTS# ===================================================================================================================
@@ -143,7 +147,7 @@ EndFunc
 
 ; #FUNCTION# ====================================================================================================================
 ; Name ..........: _Tor_Controller_WaitForMsg
-; Description ...:
+; Description ...: Wait for a message to arrive completely and get it
 ; Syntax ........: _Tor_Controller_WaitForMsg(Byref $aTorProcess[, $iTimeout = 0[, $bTrimCRLF = True]])
 ; Parameters ....: $aTorProcess         - [in/out] $aTorProcess from _Tor_Start.
 ;                  $iTimeout            - [optional] Timeout in milliseconds. Default is 0 (no timeout).
