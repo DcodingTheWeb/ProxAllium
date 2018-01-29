@@ -30,6 +30,7 @@ Global Const $TOR_ERROR_PROCESS = 2 ; Error related to Tor.exe's process.
 Global Const $TOR_ERROR_VERSION = 3 ; Error related to version.
 Global Const $TOR_ERROR_CONFIG = 4 ; Error related to configuration.
 Global Const $TOR_ERROR_NETWORK = 5 ; Error related to networking (TCP).
+Global Const $TOR_ERROR_CONTROLLER = 6 ; Error related to the Tor controller.
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT ; Associated with $aTorVersion returned by _Tor_CheckVersion
 Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE, $TOR_PROCESS_SOCKET ; Associated with $aTorProcess returned by _Tor_Start
