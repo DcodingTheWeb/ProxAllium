@@ -34,6 +34,7 @@ Global Const $TOR_ERROR_CONTROLLER = 6 ; Error related to the Tor controller.
 
 Global Enum $TOR_VERSION, $TOR_VERSION_NUMBER, $TOR_VERSION_GIT ; Associated with $aTorVersion returned by _Tor_CheckVersion
 Global Enum $TOR_PROCESS_PID, $TOR_PROCESS_HANDLE, $TOR_PROCESS_SOCKET ; Associated with $aTorProcess returned by _Tor_Start
+Global Enum $TOR_CONTROLLER_AUTH_NONE, $TOR_CONTROLLER_AUTH_HASH ; Methods of authentication with Tor controller
 Global Enum $TOR_FIND_VERSION, $TOR_FIND_PATH ; Associated with $aList returned by _Tor_Find
 Global Enum $TOR_FIND_TORLIST, $TOR_FIND_GEOIP, $TOR_FIND_GEOIP6 ; Associated with arrays found inside $aList returned by _Tor_Find
 ; ===============================================================================================================================
@@ -73,6 +74,32 @@ Func _Tor_CheckVersion($sTorPath = $g__sTorPath)
 	$aTorVersion[$TOR_VERSION_NUMBER] = $aRegEx[1]
 	If UBound($aRegEx) = 3 Then $aTorVersion[$TOR_VERSION_GIT] = $aRegEx[2]
 	Return $aTorVersion
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Controller_Authenticate
+; Description ...: Authenticate with the Tor controller
+; Syntax ........: _Tor_Controller_Authenticate(Byref $aTorProcess[, $iMethod = $TOR_CONTROLLER_AUTH_NONE[, $vPassword = ""]])
+; Parameters ....: $aTorProcess         - [in/out] $aTorProcess from _Tor_Start.
+;                  $iMethod             - [optional] One of the $TOR_CONTROLLER_AUTH constants. Default is $TOR_CONTROLLER_AUTH_NONE.
+;                  $vPassword           - [optional] Password. Default is "" (None).
+; Return values .: Success: True
+;                  Failure: @error is set to:
+;                           $TOR_ERROR_NETWORK - If there was a network error, @extended is set to TCPSend or TCPRecv's error.
+;                           $TOR_ERROR_CONTROLLER - If Tor replied with an unexpected response, the response string is returned.
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: This should be the second step after _Tor_Controller_Connect
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Controller_Authenticate(ByRef $aTorProcess, $iMethod = $TOR_CONTROLLER_AUTH_NONE, $vPassword = "")
+	Local $sRawCommand = "AUTHENTICATE"
+	If $iMethod = $TOR_CONTROLLER_AUTH_HASH Then $sRawCommand &= ' "' & $vPassword & '"'
+	_Tor_Controller_SendRaw($aTorProcess, $sRawCommand)
+	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
+	Local $sResponse = _Tor_Controller_WaitForMsg($aTorProcess)
+	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
+	If $sResponse = "250 OK" Then Return True
+	Return SetError($TOR_ERROR_CONTROLLER, 0, $sResponse)
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
