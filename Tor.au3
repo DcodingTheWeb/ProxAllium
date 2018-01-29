@@ -107,7 +107,7 @@ EndFunc
 ; Author ........: Damon Harris (TheDcoder)
 ; Example .......: No
 ; ===============================================================================================================================
-Func _Tor_Controller_SendRaw($aTorProcess, $sRawCommand, $bAutoCRLF = True)
+Func _Tor_Controller_SendRaw(ByRef $aTorProcess, $sRawCommand, $bAutoCRLF = True)
 	If $bAutoCRLF Then $sRawCommand &= @CRLF
 	TCPSend($aTorProcess[$TOR_PROCESS_SOCKET], $sRawCommand)
 	If @error Then Return SetError($TOR_ERROR_NETWORK, @error, False)
