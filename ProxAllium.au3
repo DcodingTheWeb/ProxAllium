@@ -322,6 +322,7 @@ Func Handle_TorOutput()
 	Local $aCallbackFuncs = [Handle_Bootstrap, Handle_WarningAndError]
 	Local $sPartialTorOutput = ""
 	Local $aPartialTorOutput[0]
+	Local $bRemoveCallback, $sRemovalList
 	While IsTorRunning() ; Loop until Tor is dead
 		Sleep($g_iOutputPollInterval) ; Don't kill the CPU
 		$sPartialTorOutput = StdoutRead($g_aTorProcess[$TOR_PROCESS_PID])
@@ -329,9 +330,14 @@ Func Handle_TorOutput()
 		_GUICtrlEdit_AppendText($g_hTorOutput, $sPartialTorOutput)
 		$aPartialTorOutput = StringSplit(StringStripWS($sPartialTorOutput, $STR_STRIPTRAILING), @CRLF, $STR_ENTIRESPLIT)
 		For $iLine = 1 To $aPartialTorOutput[0]
-			For $fuCallbackFunc In $aCallbackFuncs
-				$fuCallbackFunc(StringSplit($aPartialTorOutput[$iLine], ' '))
+			For $iFunc = 0 To UBound($aCallbackFuncs) - 1
+				$bRemoveCallback = $aCallbackFuncs[$iFunc](StringSplit($aPartialTorOutput[$iLine], ' '))
+				If $bRemoveCallback Then $sRemovalList &= $iFunc & ';'
 			Next
+			If Not $sRemovalList = "" Then
+				_ArrayDelete($aCallbackFuncs, StringTrimRight($sRemovalList, 1))
+				$sRemovalList = ""
+			EndIf
 		Next
 	WEnd
 	Local $iExitCode = _Process_GetExitCode($g_aTorProcess[$TOR_PROCESS_HANDLE])
@@ -370,6 +376,7 @@ Func Handle_Bootstrap(ByRef $aTorOutput)
 		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
 		GUICtrlSetData($g_idMainGUI_Port, $g_sTorConfig_Port)
 		TrayTip("Tor is ready", "Tor has successfully built a circuit, you can now start using the proxy!", 10, $TIP_ICONASTERISK)
+		Return True
 	EndIf
 EndFunc
 #EndRegion Misc. Functions
