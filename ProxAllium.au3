@@ -123,14 +123,14 @@ Func GUI_CreateMainWindow()
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	GUICtrlCreateGroup("Tor Details", 5, 125, 570, 64)
 	GUICtrlCreateLabel("Tor PID:", 10, 144, 60, 15)
-	Global $g_idMainGUI_TorPID = GUICtrlCreateInput('...', 73, 139, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	Global $g_idMainGUI_TorPID = GUICtrlCreateInput("Not running", 73, 139, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	GUICtrlCreateLabel("Tor Version:", 10, 169, 60, 15)
-	Global $g_idMainGUI_TorVersion = GUICtrlCreateInput('...', 73, 164, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
+	Global $g_idMainGUI_TorVersion = GUICtrlCreateInput('(Yet to be determined)', 73, 164, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	GUICtrlCreateGroup("Control Panel", 5, 192, 570, 42)
 	GUICtrlCreateLabel("Status:", 10, 213, 33, 15)
-	Global $g_idMainGUI_Status = GUICtrlCreateInput('...', 48, 208, 438, 20, BitOr($ES_CENTER, $ES_READONLY), $WS_EX_CLIENTEDGE)
+	Global $g_idMainGUI_Status = GUICtrlCreateInput('Initializing', 48, 208, 438, 20, BitOr($ES_CENTER, $ES_READONLY), $WS_EX_CLIENTEDGE)
 	GUICtrlSetBkColor(-1, $COLOR_WHITE)
 	Global $g_idMainGUI_ToggleButton = GUICtrlCreateButton('...', 489, 207, 82, 22)
 	GUICtrlSetState(-1, $GUI_DISABLE)
@@ -139,6 +139,7 @@ Func GUI_CreateMainWindow()
 	Global $g_hMainGUI_Log = GUICtrlGetHandle($g_idMainGUI_Log)
 	GUICtrlSetFont($g_idMainGUI_Log, 9, Default, Default, "Consolas")
 	GUICtrlSetBkColor($g_idMainGUI_Log, $COLOR_WHITE)
+	GUI_Reset()
 	GUISetState(@SW_SHOW, $g_hMainGUI) ; Make the GUI visible
 EndFunc
 
@@ -305,6 +306,13 @@ Func GUI_RegenerateTorrc()
 		EndIf
 	EndIf
 EndFunc
+
+Func GUI_Reset()
+	GUICtrlSetData($g_idMainGUI_Port, $g_sTorConfig_Port & ' (As defined in the settings)')
+	GUICtrlSetData($g_idMainGUI_TorPID, "Not running")
+	TrayItemSetText($g_idTrayToggleTor, "Start Tor")
+	GUICtrlSetData($g_idMainGUI_ToggleButton, "Start")
+EndFunc
 #EndRegion GUI Handlers
 
 #Region Event Handler Functions
@@ -352,9 +360,7 @@ Func Handle_TorOutput()
 		GUI_LogOut("Tor exited with exit code: " & $iExitCode)
 		TrayTip("Tor has exited", "Tor has exited with exit code: " & $iExitCode, 10, $TIP_ICONASTERISK + $TIP_NOSOUND)
 	EndIf
-	TrayItemSetText($g_idTrayToggleTor, "Start Tor")
-	GUICtrlSetData($g_idMainGUI_ToggleButton, "Start")
-	GUICtrlSetData($g_idMainGUI_TorPID, '...')
+	GUI_Reset()
 EndFunc
 
 Func Handle_WarningAndError(ByRef $aTorOutput)
@@ -374,7 +380,6 @@ Func Handle_Bootstrap(ByRef $aTorOutput)
 	If $iPercentage = 100 Then
 		GUI_SetStatus("Running")
 		GUI_LogOut("Successfully built a circuit, Tor is now ready for use!")
-		GUICtrlSetData($g_idMainGUI_Port, $g_sTorConfig_Port)
 		TrayTip("Tor is ready", "Tor has successfully built a circuit, you can now start using the proxy!", 10, $TIP_ICONASTERISK)
 		Return True
 	EndIf
