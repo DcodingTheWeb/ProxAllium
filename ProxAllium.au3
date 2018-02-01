@@ -371,7 +371,7 @@ Func Handle_WarningAndError(ByRef $aTorOutput)
 EndFunc
 
 Func Handle_OpenSockets(ByRef $aTorOutput)
-	If ($aTorOutput[0] < 9) And ($aTorOutput[5] <> "Opening") Then Return
+	If ($aTorOutput[0] < 9) Or ($aTorOutput[5] <> "Opening") Then Return
 	Local Enum $IP, $PORT
 	Local $aAddress = StringSplit($aTorOutput[9], ':', $STR_NOCOUNT)
 	Switch $aTorOutput[6]
