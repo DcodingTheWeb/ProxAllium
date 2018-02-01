@@ -22,6 +22,7 @@
 ; _Tor_Controller_Connect            - Connect to Tor's TCP controller interface
 ; _Tor_Controller_SendRaw            - Send raw commands to the controller interface
 ; _Tor_Controller_WaitForMsg         - Wait for a message to arrive completely and get it
+; _Tor_GenHash                       - Generate a hash for use with Tor
 ; _Tor_Find                          - Lists the tor executables and geoip files.
 ; _Tor_SetPath                       - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
 ; _Tor_Start                         - Starts Tor
@@ -252,6 +253,30 @@ Func _Tor_Find($vFolders)
 	Next
 	Local $aList[3] = [$aTorList, $aGeoIP, $aGeoIPv6]
 	Return $aList
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_GenHash
+; Description ...: Generate a hash for use with Tor
+; Syntax ........: _Tor_GenHash($sString)
+; Parameters ....: $sString             - The string for which will the hash be calculated.
+; Return values .: Success: $aHash (See Remarks)
+;                  Failure: False and @error is set to:
+;                           $TOR_ERROR_PROCESS - If Tor didn't launch or run successfully
+;                           $TOR_ERROR_GENERIC - If the hash was not found in the output
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: $aHash is an array with 3 elements:
+;                  $aHash[0] - Contains the full hash (16:660537E3E1CD49996044A3BF558097A981F539FEA2F9DA662B4626C1C2)
+;                  $aHash[1] - Contains the salt of the hash (660537E3E1CD4999)
+;                  $aHash[2] - Contains the salted hash (44A3BF558097A981F539FEA2F9DA662B4626C1C2)
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_GenHash($sString)
+	Local $sOutput = _Process_RunCommand($PROCESS_RUNWAIT, $g__sTorPath & ' --hash-password "' & $sString & '"')
+	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
+	Local $aHash = StringRegExp($sOutput, '16:([A-Z0-9]{16})60([A-Z0-9]{40})', $STR_REGEXPARRAYFULLMATCH)
+	If @error Then Return SetError($TOR_ERROR_GENERIC, @error, False)
+	Return $aHash
 EndFunc
 
 ; #FUNCTION# ====================================================================================================================
