@@ -327,7 +327,7 @@ Func Handle_MultipleInstance()
 EndFunc
 
 Func Handle_TorOutput()
-	Local $aCallbackFuncs = [Handle_Bootstrap, Handle_WarningAndError]
+	Local $aCallbackFuncs = [Handle_OpenSockets, Handle_Bootstrap, Handle_WarningAndError]
 	Local $sPartialTorOutput = ""
 	Local $aPartialTorOutput[0]
 	Local $bRemoveCallback, $sRemovalList
@@ -368,6 +368,16 @@ Func Handle_WarningAndError(ByRef $aTorOutput)
 		If $aTorOutput[5] = "Path" Then Return
 		GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
 	EndIf
+EndFunc
+
+Func Handle_OpenSockets(ByRef $aTorOutput)
+	If ($aTorOutput[0] < 9) And ($aTorOutput[5] <> "Opening") Then Return
+	Local Enum $IP, $PORT
+	Local $aAddress = StringSplit($aTorOutput[9], ':', $STR_NOCOUNT)
+	Switch $aTorOutput[6]
+		Case "Socks"
+			GUICtrlSetData($g_idMainGUI_Port, $aAddress[$PORT])
+	EndSwitch
 EndFunc
 
 Func Handle_Bootstrap(ByRef $aTorOutput)
