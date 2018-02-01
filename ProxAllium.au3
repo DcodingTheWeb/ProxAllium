@@ -47,6 +47,8 @@ Global $g_sTorGeoIPv6File = IniReadWrite($CONFIG_INI, "tor", "geoip6_file", 'Tor
 Global $g_iOutputPollInterval = Int(IniReadWrite($CONFIG_INI, "proxallium", "output_poll_interval", "100"))
 
 Global $g_sTorConfig_Port = IniReadWrite($CONFIG_INI, "tor_config", "port", "9050")
+Global $g_sTorConfig_ControlPort = IniReadWrite($CONFIG_INI, "tor_config", "control_port", "9051")
+Global $g_sTorConfig_ControlPass = IniReadWrite($CONFIG_INI, "tor_config", "control_pass", String(Random(100000, 999999, 1)))
 Global $g_bTorConfig_OnlyLocalhost = (IniReadWrite($CONFIG_INI, "tor_config", "localhost_only", "true") = "true")
 Global $g_sTorConfig_ExitNodeCC = IniRead($CONFIG_INI, "tor_config", "exit_node_country_code", "")
 
@@ -374,10 +376,17 @@ Func Handle_OpenSockets(ByRef $aTorOutput)
 	If ($aTorOutput[0] < 9) Or ($aTorOutput[5] <> "Opening") Then Return
 	Local Enum $IP, $PORT
 	Local $aAddress = StringSplit($aTorOutput[9], ':', $STR_NOCOUNT)
+	Local Static $bSocksInit = False
+	Local Static $bControlInit = False
 	Switch $aTorOutput[6]
 		Case "Socks"
 			GUICtrlSetData($g_idMainGUI_Port, $aAddress[$PORT])
+			$bSocksInit = True
+		Case "Control"
+			Core_InitConnectionToController($g_sTorConfig_ControlPort)
+			$bControlInit = True
 	EndSwitch
+	Return ($bSocksInit And $bControlInit)
 EndFunc
 
 Func Handle_Bootstrap(ByRef $aTorOutput)
@@ -431,6 +440,10 @@ Func Core_GenTorrc()
 	FileWriteLine($hTorrc, "")
 	FileWriteLine($hTorrc, '## Open SOCKS proxy on the following port')
 	FileWriteLine($hTorrc, 'SOCKSPort ' & $g_sTorConfig_Port)
+	FileWriteLine($hTorrc, "")
+	FileWriteLine($hTorrc, '## Open the Tor controller interface on the following port')
+	FileWriteLine($hTorrc, 'ControlPort ' & $g_sTorConfig_ControlPort)
+	FileWriteLine($hTorrc, 'HashedControlPassword ' & _Tor_GenHash($g_sTorConfig_ControlPass)[0])
 	FileWriteLine($hTorrc, "")
 	If $g_bTorConfig_OnlyLocalhost Then
 		FileWriteLine($hTorrc, '## Only accept connections from localhost')
@@ -503,6 +516,22 @@ Func Core_GenTorrc()
 	FileWriteLine($hTorrc, $sCustomConfig)
 	FileSetEnd($hTorrc)
 	FileClose($hTorrc)
+EndFunc
+
+Func Core_InitConnectionToController($iPort)
+	_Tor_Controller_Connect($g_aTorProcess, $g_sTorConfig_ControlPort)
+	If @error Then
+		GUI_LogOut('Failed to connect to Tor contoller! (Error Code: ' & @error & ')' )
+		Return SetError(1, 0, False)
+	EndIf
+	_Tor_Controller_Authenticate($g_aTorProcess, $TOR_CONTROLLER_AUTH_HASH, $g_sTorConfig_ControlPass)
+	If @error Then
+		GUI_LogOut('Failed to authenticate with Tor contoller! (Error Code: ' & @error & ')' )
+		Return SetError(1, 0, False)
+	EndIf
+	_Tor_Controller_SendRaw($g_aTorProcess, 'TAKEOWNERSHIP')
+	GUI_LogOut('Successfully connected to the controller!')
+	Return True
 EndFunc
 
 Func IsTorRunning()
