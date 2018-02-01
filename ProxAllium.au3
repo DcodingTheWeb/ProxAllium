@@ -502,6 +502,7 @@ Func Core_GenTorrc()
 	If $g_bTorConfig_BridgesEnabled Then
 		FileWriteLine($hTorrc, '## Bridges')
 		FileWriteLine($hTorrc, 'UseBridges 1')
+		FileWriteLine($hTorrc, 'ClientTransportPlugin obfs2,obfs3,obfs4,scramblesuit exec Tor\PluggableTransports\obfs4\obfs4proxy')
 		Local $aBridges = StringSplit(StringStripCR(GUICtrlRead($g_idBridgesEdit)), @LF)
 		For $iBridge = 1 To $aBridges[0]
 			If Not StringIsSpace($aBridges[$iBridge]) Then FileWriteLine($hTorrc, 'Bridge ' & $aBridges[$iBridge]) ; Skip blank lines

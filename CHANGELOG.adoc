@@ -4,7 +4,7 @@
 Any changes listed here will be incorporated into the next future release
 
 .Additions
-* Support for vanilla bridges with GUI
+* Support for bridges with pluggable transports `obfs` (all versions) and `scramblesuit`, GUI included for configuration
 * Added an option to regenerate Tor configuration (under `Options` menu)
 
 .Fixed and changes
