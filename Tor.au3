@@ -345,17 +345,27 @@ EndFunc
 ; Parameters ....: $aTorProcess         - [in/out] $aTorProcess from _Tor_Start.
 ; Return values .: Success: True and $aTorProcess is modified, See Remarks.
 ;                  Failure: False, @error set to:
-;                           $TOR_ERROR_GENERIC - If $aTorProcess is invalid (does not contain 2 elements).
+;                           $TOR_ERROR_GENERIC - If $aTorProcess is invalid (does not contain 3 elements).
 ;                           $TOR_ERROR_PROCESS - If ProcessClose fails, @extended is set to ProcessClose's @error
 ; Author ........: Damon Harris (TheDcoder)
-; Remarks .......: $aTorProcess[$TOR_PROCESS_PID] and $aTorProcess[$TOR_PROCESS_HANDLE] are set to 0 which help avoid conflict
+; Remarks .......: Tor is sent the shutdown signal first (using TCP) and if it fails, it is closed forcibly by ProcessClose
+;                  $aTorProcess[$TOR_PROCESS_PID] and $aTorProcess[$TOR_PROCESS_HANDLE] are set to 0 which help avoid conflict
 ; Related .......: _Tor_Start
 ; Example .......: No
 ; ===============================================================================================================================
 Func _Tor_Stop(ByRef $aTorProcess)
-	If Not UBound($aTorProcess) = 2 Then Return SetError($TOR_ERROR_GENERIC, 0, False)
-	ProcessClose($aTorProcess[$TOR_PROCESS_PID])
-	If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
+	If UBound($aTorProcess) <> 3 Then Return SetError($TOR_ERROR_GENERIC, 0, False)
+	_Tor_Controller_SendRaw($aTorProcess, 'SIGNAL SHUTDOWN')
+	If Not @error Then
+		Local $sResponse = _Tor_Controller_WaitForMsg($aTorProcess)
+		If Not @error Then
+			_Tor_Controller_CheckReplyForError($sResponse)
+			If Not @error Then Return
+		EndIf
+	Else
+		ProcessClose($aTorProcess[$TOR_PROCESS_PID]) ; Force closure
+		If @error Then Return SetError($TOR_ERROR_PROCESS, @error, False)
+	EndIf
 	$aTorProcess[$TOR_PROCESS_PID] = 0
 	_Process_CloseHandle($aTorProcess[$TOR_PROCESS_HANDLE])
 	$aTorProcess[$TOR_PROCESS_HANDLE] = 0
