@@ -522,13 +522,13 @@ EndFunc
 Func Core_InitConnectionToController($iPort)
 	_Tor_Controller_Connect($g_aTorProcess, $g_sTorConfig_ControlPort)
 	If @error Then
-		GUI_LogOut('Failed to connect to Tor contoller! (Error Code: ' & @error & ')' )
+		GUI_LogOut('Failed to connect to Tor contoller! ' & StringFormat('(Error Code: %i and Extended Code: %i)', @error, @extended))
 		Return SetError(1, 0, False)
 	EndIf
 	_Tor_Controller_Authenticate($g_aTorProcess, $TOR_CONTROLLER_AUTH_HASH, $g_sTorConfig_ControlPass)
 	If @error Then
-		GUI_LogOut('Failed to authenticate with Tor contoller! (Error Code: ' & @error & ')' )
-		Return SetError(1, 0, False)
+		GUI_LogOut('Failed to authenticate with Tor contoller! ' & StringFormat('(Error Code: %i and Extended Code: %i)', @error, @extended))
+		Return SetError(2, 0, False)
 	EndIf
 	_Tor_Controller_SendRaw($g_aTorProcess, 'TAKEOWNERSHIP')
 	GUI_LogOut('Successfully connected to the controller!')
