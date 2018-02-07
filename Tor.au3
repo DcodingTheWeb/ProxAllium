@@ -21,6 +21,7 @@
 ; _Tor_Controller_CheckReplyForError - Check for errors in a reply/response from the controller
 ; _Tor_Controller_Connect            - Connect to Tor's TCP controller interface
 ; _Tor_Controller_SendRaw            - Send raw commands to the controller interface
+; _Tor_Controller_TakeOwnership      - Take ownership of the Tor process (Tor closes if it loses the connection)
 ; _Tor_Controller_WaitForMsg         - Wait for a message to arrive completely and get it
 ; _Tor_GenHash                       - Generate a hash for use with Tor
 ; _Tor_Find                          - Lists the tor executables and geoip files.
@@ -172,6 +173,29 @@ Func _Tor_Controller_SendRaw(ByRef $aTorProcess, $sRawCommand, $bAutoCRLF = True
 	If $bAutoCRLF Then $sRawCommand &= @CRLF
 	TCPSend($aTorProcess[$TOR_PROCESS_SOCKET], $sRawCommand)
 	If @error Then Return SetError($TOR_ERROR_NETWORK, @error, False)
+	Return True
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_Controller_TakeOwnership
+; Description ...: Take ownership of the Tor process (Tor closes if it loses the connection)
+; Syntax ........: _Tor_Controller_TakeOwnership($aTorProcess)
+; Parameters ....: $aTorProcess         - [in/out] $aTorProcess from _Tor_Start.
+; Return values .: Success: True
+;                  Failure: False, @error set to:
+;                           $TOR_ERROR_GENERIC - If controller sent a reply indicating an error and @extended is
+;                                                set to _Tor_Controller_CheckReplyForError's @extended
+;                           $TOR_ERROR_NETWORK - If a network error occurs, @extended is set to TCPSend/TCPRecv's @error
+; Author ........: Damon Harris (TheDcoder)
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_Controller_TakeOwnership($aTorProcess)
+	_Tor_Controller_SendRaw($aTorProcess, 'TAKEOWNERSHIP')
+	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
+	Local $sReply = _Tor_Controller_WaitForMsg($aTorProcess)
+	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
+	_Tor_Controller_CheckReplyForError($sReply)
+	If @error Then Return SetError($TOR_ERROR_GENERIC, @extended, False)
 	Return True
 EndFunc
 
