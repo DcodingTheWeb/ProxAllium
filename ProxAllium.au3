@@ -530,8 +530,12 @@ Func Core_InitConnectionToController($iPort)
 		GUI_LogOut('Failed to authenticate with Tor contoller! ' & StringFormat('(Error Code: %i and Extended Code: %i)', @error, @extended))
 		Return SetError(2, 0, False)
 	EndIf
-	_Tor_Controller_SendRaw($g_aTorProcess, 'TAKEOWNERSHIP')
 	GUI_LogOut('Successfully connected to the controller!')
+	_Tor_Controller_TakeOwnership($g_aTorProcess)
+	If @error Then
+		GUI_LogOut('Failed to take ownership of Tor instance ' & StringFormat('(Error Code: %i and Extended Code: %i)', @error, @extended))
+		SetExtended(1, True)
+	EndIf
 	Return True
 EndFunc
 
