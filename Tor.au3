@@ -27,6 +27,7 @@
 ; _Tor_SetPath                       - Sets Tor.exe's path, it will be used by the UDF in the rest of the functions.
 ; _Tor_Start                         - Starts Tor
 ; _Tor_Stop                          - Stops Tor
+; _Tor_SwitchCircuit                 - Switch Tor to clean circuits so new application requests don't share any circuits with old ones
 ; _Tor_VerifyConfig                  - Check if the configuration is valid.
 ; ===============================================================================================================================
 
@@ -369,6 +370,30 @@ Func _Tor_Stop(ByRef $aTorProcess)
 	$aTorProcess[$TOR_PROCESS_PID] = 0
 	_Process_CloseHandle($aTorProcess[$TOR_PROCESS_HANDLE])
 	$aTorProcess[$TOR_PROCESS_HANDLE] = 0
+	Return True
+EndFunc
+
+; #FUNCTION# ====================================================================================================================
+; Name ..........: _Tor_SwitchCircuit
+; Description ...: Switch Tor to clean circuits so new application requests don't share any circuits with old ones
+; Syntax ........: _Tor_SwitchCircuit(Byref $aTorProcess)
+; Parameters ....: $aTorProcess         - [in/out] $aTorProcess from _Tor_Start.
+; Return values .: Success: True
+;                  Failure: False, @error set to:
+;                           $TOR_ERROR_GENERIC - If controller sent a reply indicating an error and @extended is
+;                                                set to _Tor_Controller_CheckReplyForError's @extended
+;                           $TOR_ERROR_NETWORK - If a network error occurs, @extended is set to TCPSend/TCPRecv's @error
+; Author ........: Damon Harris (TheDcoder)
+; Remarks .......: Tor may rate-limit this action so use it responsibly
+; Example .......: No
+; ===============================================================================================================================
+Func _Tor_SwitchCircuit(ByRef $aTorProcess)
+	_Tor_Controller_SendRaw($aTorProcess, 'SIGNAL NEWNYM')
+	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
+	Local $sReply = _Tor_Controller_WaitForMsg($aTorProcess)
+	If @error Then Return SetError($TOR_ERROR_NETWORK, @extended, False)
+	_Tor_Controller_CheckReplyForError($sReply)
+	If @error Then Return SetError($TOR_ERROR_GENERIC, @extended, False)
 	Return True
 EndFunc
 
