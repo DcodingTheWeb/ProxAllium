@@ -9,7 +9,7 @@ Any changes listed here will be incorporated into the next future release
 * Added an option to switch to clean Tor circuits (under `Options` menu)
 
 .Fixed and changes
-* Tor Output now resets after starting Tor instead of resetting everytime Tor stops or crahses
+* Tor Output now resets after starting Tor instead of resetting everytime Tor stops or crashes
 * Paths from configuration (`config.ini`) are no longer converted to absolute paths internally, this prevents use of absolute paths in the generated `torrc` file which may cause portability issues
 
 == v0.3-beta (GUI Goodness)
