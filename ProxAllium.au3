@@ -69,21 +69,25 @@ Opt("TrayMenuMode", 1 + 2) ; No default menu and automatic checkmarks
 Opt("TrayOnEventMode", 1) ; OnEvent mode
 Opt("TrayAutoPause", 0) ; No Auto-Pause
 
-TraySetClick(16) ; Will display the menu when releasing the secondary mouse button
-TraySetOnEvent($TRAY_EVENT_PRIMARYDOWN, "GUI_ToggleMainWindow")
-TrayItemSetState(TrayCreateItem("ProxAllium"), $TRAY_DISABLE)
-TrayCreateItem("")
-Global $g_idTrayMainWinToggle = TrayCreateItem("Hide Main Window")
-TrayItemSetOnEvent($g_idTrayMainWinToggle, "GUI_ToggleMainWindow")
-Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
-TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
-TrayCreateItem("")
-Global $g_idTrayToggleTor = TrayCreateItem("Stop Tor")
-TrayItemSetOnEvent($g_idTrayToggleTor, "Tor_Toggle")
-TrayCreateItem("")
-TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_MainWindowExit")
-TraySetState($TRAY_ICONSTATE_SHOW)
-TraySetToolTip("ProxAllium")
+Tray_Initialize()
+
+Func Tray_Initialize()
+	TraySetClick(16) ; Will display the menu when releasing the secondary mouse button
+	TraySetOnEvent($TRAY_EVENT_PRIMARYDOWN, "GUI_ToggleMainWindow")
+	TrayItemSetState(TrayCreateItem("ProxAllium"), $TRAY_DISABLE)
+	TrayCreateItem("")
+	Global $g_idTrayMainWinToggle = TrayCreateItem("Hide Main Window")
+	TrayItemSetOnEvent($g_idTrayMainWinToggle, "GUI_ToggleMainWindow")
+	Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
+	TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
+	TrayCreateItem("")
+	Global $g_idTrayToggleTor = TrayCreateItem("Stop Tor")
+	TrayItemSetOnEvent($g_idTrayToggleTor, "Tor_Toggle")
+	TrayCreateItem("")
+	TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_MainWindowExit")
+	TraySetState($TRAY_ICONSTATE_SHOW)
+	TraySetToolTip("ProxAllium")
+EndFunc
 #EndRegion Tray Creation
 
 #Region GUI Creation
