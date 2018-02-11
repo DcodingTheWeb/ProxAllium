@@ -81,12 +81,25 @@ Func Tray_Initialize()
 	Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
 	TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
 	TrayCreateItem("")
+	Local $idOptions = TrayCreateMenu("Options")
+	Global $g_idTrayOptionBridges = TrayCreateItem("Bridges", $idOptions)
+	TrayItemSetOnEvent($g_idTrayOptionBridges, "Tray_HandleBridgeOption")
+	TrayCreateItem("", $idOptions)
+	Global $g_idTrayOptionRegenConfig = TrayCreateItem("Regenerate Tor configuration", $idOptions)
+	TrayItemSetOnEvent($g_idTrayOptionRegenConfig, "GUI_RegenerateTorrc")
+	Global $g_idTrayOptionRefreshCircuit = TrayCreateItem("New Tor Circuit for future connections", $idOptions)
+	TrayItemSetOnEvent($g_idTrayOptionRefreshCircuit, "GUI_RefreshCircuit")
+	TrayCreateItem("")
 	Global $g_idTrayToggleTor = TrayCreateItem("Stop Tor")
 	TrayItemSetOnEvent($g_idTrayToggleTor, "Tor_Toggle")
 	TrayCreateItem("")
 	TrayItemSetOnEvent(TrayCreateItem("Exit"), "GUI_MainWindowExit")
 	TraySetState($TRAY_ICONSTATE_SHOW)
 	TraySetToolTip("ProxAllium")
+EndFunc
+
+Func Tray_HandleBridgeOption()
+	GUI_BridgeHandler($g_idTrayOptionBridges)
 EndFunc
 #EndRegion Tray Creation
 
@@ -266,7 +279,7 @@ Func GUI_BridgeHandler($iCtrlID = Default)
 				If MsgBox($MB_ICONQUESTION + $MB_YESNO + $MB_DEFBUTTON2, "Unsaved changes", "You have made some changes, are you sure that you want to exit without saving them to disk?") = $IDNO Then Return
 			EndIf
 			GUISetState(@SW_HIDE, $g_hBridgesGUI)
-		Case $g_idMainGUI_MenuBridges
+		Case $g_idMainGUI_MenuBridges, $g_idTrayOptionBridges
 			_GUICtrlEdit_SetModify($g_idBridgesEdit, False)
 			$bModified = False
 			GUISetState(@SW_SHOW, $g_hBridgesGUI)
