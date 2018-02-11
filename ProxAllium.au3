@@ -99,7 +99,7 @@ Func Tray_Initialize()
 EndFunc
 
 Func Tray_HandleBridgeOption()
-	GUI_BridgeHandler($g_idTrayOptionBridges)
+	Call("GUI_BridgeHandler", $g_idTrayOptionBridges)
 EndFunc
 #EndRegion Tray Creation
 
