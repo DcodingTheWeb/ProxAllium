@@ -6,6 +6,7 @@ Any changes listed here will be incorporated into the next future release
 .Additions
 * Support for bridges with pluggable transports `obfs` (all versions) and `scramblesuit`, GUI included for configuration
 * Added an option to start with Windows
+* Added an option to start minimized
 * Added an option to regenerate Tor configuration
 * Added an option to switch to clean Tor circuits
 

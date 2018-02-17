@@ -64,6 +64,7 @@ Global $g_sTorConfig_BridgesPath = IniRead($CONFIG_INI, "bridges", "path", $g_sT
 
 Global $g_bTorConfig_AutoStart = (IniRead($CONFIG_INI, "startup", "auto_start", "false") = "true")
 Global $g_sTorConfig_AutoStartShortcut = IniRead($CONFIG_INI, "startup", "auto_start_shortcut", "")
+Global $g_bTorConfig_StartMinimized = (IniRead($CONFIG_INI, "startup", "start_minimized", "false") = "true")
 #EndRegion Read Configuration
 
 #EndRegion Variable Initialization
@@ -80,7 +81,7 @@ Func Tray_Initialize()
 	TraySetOnEvent($TRAY_EVENT_PRIMARYDOWN, "GUI_ToggleMainWindow")
 	TrayItemSetState(TrayCreateItem("ProxAllium"), $TRAY_DISABLE)
 	TrayCreateItem("")
-	Global $g_idTrayMainWinToggle = TrayCreateItem("Hide Main Window")
+	Global $g_idTrayMainWinToggle = TrayCreateItem('...')
 	TrayItemSetOnEvent($g_idTrayMainWinToggle, "GUI_ToggleMainWindow")
 	Global $g_idTrayTorOutputToggle = TrayCreateItem("Show Tor Output")
 	TrayItemSetOnEvent($g_idTrayTorOutputToggle, "GUI_ToggleTorOutputWindow")
@@ -138,6 +139,9 @@ Func GUI_CreateMainWindow()
 	Global $g_idMainGUI_MenuAutoStart = GUICtrlCreateMenuItem("Automatically start with Windows", $idMenuStartup)
 	GUICtrlSetOnEvent(-1, "GUI_AutoStart")
 	If $g_bTorConfig_AutoStart Then GUICtrlSetState(-1, $GUI_CHECKED)
+	Global $g_idMainGUI_MenuStartMinimized = GUICtrlCreateMenuItem("Start Minimized", $idMenuStartup)
+	If $g_bTorConfig_StartMinimized Then GUICtrlSetState(-1, $GUI_CHECKED)
+	GUICtrlSetOnEvent(-1, "GUI_StartMinimized")
 	GUICtrlCreateGroup("Proxy Details", 5, 5, 570, 117)
 	GUICtrlCreateLabel("Hostname:", 10, 27, 60, 15)
 	Global $g_idMainGUI_Hostname = GUICtrlCreateInput("localhost", 73, 22, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
@@ -170,7 +174,7 @@ Func GUI_CreateMainWindow()
 	GUICtrlSetFont($g_idMainGUI_Log, 9, Default, Default, "Consolas")
 	GUICtrlSetBkColor($g_idMainGUI_Log, $COLOR_WHITE)
 	GUI_Reset()
-	GUISetState(@SW_SHOW, $g_hMainGUI) ; Make the GUI visible
+	GUI_ToggleMainWindow()
 EndFunc
 
 Func GUI_LogOut($sText, $bEOL = True)
@@ -265,14 +269,14 @@ Func GUI_ToggleTorOutputWindow()
 EndFunc
 
 Func GUI_ToggleMainWindow()
-	Local Static $bHidden = False
+	Local Static $bHidden = ($g_bTorConfig_StartMinimized ? False : True)
 	If $bHidden Then
 		$bHidden = Not (GUISetState(@SW_SHOWNORMAL, $g_hMainGUI) = 1)
 		If Not $bHidden Then TrayItemSetText($g_idTrayMainWinToggle, "Hide Main Window")
-		Return
+	Else
+		$bHidden = (GUISetState(@SW_HIDE, $g_hMainGUI) = 1)
+		If $bHidden Then TrayItemSetText($g_idTrayMainWinToggle, "Show Main Window")
 	EndIf
-	$bHidden = (GUISetState(@SW_HIDE, $g_hMainGUI) = 1)
-	If $bHidden Then TrayItemSetText($g_idTrayMainWinToggle, "Show Main Window")
 EndFunc
 
 Func GUI_BridgeHandler($iCtrlID = Default)
@@ -355,7 +359,8 @@ Func GUI_AutoStart()
 			MsgBox($MB_ICONERROR, "Failed to remove startup", "Failed to remove shortcut in the Startup folder!")
 		Else
 			$g_bTorConfig_AutoStart = False
-			IniDelete($CONFIG_INI, "startup")
+			IniDelete($CONFIG_INI, "startup", "auto_start")
+			IniDelete($CONFIG_INI, "startup", "auto_start_shortcut")
 			GUICtrlSetState($g_idMainGUI_MenuAutoStart, $GUI_UNCHECKED)
 			MsgBox($MB_ICONINFORMATION, "Successfully removed from startup", "ProxAllium will no longer start with Windows")
 		EndIf
@@ -374,6 +379,18 @@ Func GUI_AutoStart()
 			GUICtrlSetState($g_idMainGUI_MenuAutoStart, $GUI_CHECKED)
 			MsgBox($MB_ICONINFORMATION, "Successfully added to startup", "ProxAllium will start with Windows from now!")
 		EndIf
+	EndIf
+EndFunc
+
+Func GUI_StartMinimized()
+	If $g_bTorConfig_StartMinimized Then
+		$g_bTorConfig_StartMinimized = False
+		IniDelete($CONFIG_INI, "startup", "start_minimized")
+		GUICtrlSetState($g_idMainGUI_MenuStartMinimized, $GUI_UNCHECKED)
+	Else
+		$g_bTorConfig_StartMinimized = True
+		IniWrite($CONFIG_INI, "startup", "start_minimized", "true")
+		GUICtrlSetState($g_idMainGUI_MenuStartMinimized, $GUI_CHECKED)
 	EndIf
 EndFunc
 
