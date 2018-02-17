@@ -46,7 +46,7 @@ It is not a replacement for the `TBB`, ProxAllium does not come with any browser
 You can find the 7-zip packages at the https://github.com/DcodingTheWeb/ProxAllium/releases[Releases] page.
 
 === How do I make it start on startup?
-Create a shortcut of `ProxAllium.exe` at `%appdata%\Microsoft\Windows\Start Menu\Programs\Startup` and Windows will start ProxAllium automatically on startup.
+Use the `Automatically start with Windows` option (in `Menu -> Options -> Startup`).
 
 === I have a question, where can I ask?
 You can consult to the "link:https://proxallium.tuxfamily.org/chat/[Chat]" page on ProxAllium's website.

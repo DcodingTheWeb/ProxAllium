@@ -24,6 +24,7 @@
 #include <MsgBoxConstants.au3>
 #include <StringConstants.au3>
 #include <TrayConstants.au3>
+#include <WinAPIShellEx.au3>
 #include "Tor.au3"
 #include "IniReadWrite.au3"
 #EndRegion Includes
@@ -60,6 +61,9 @@ Global $g_sTorConfig_ProxyPass = IniRead($CONFIG_INI, "proxy", "pass", "")
 
 Global $g_bTorConfig_BridgesEnabled = (IniRead($CONFIG_INI, "bridges", "enabled", "false") = "true")
 Global $g_sTorConfig_BridgesPath = IniRead($CONFIG_INI, "bridges", "path", $g_sTorDataDirPath & '\bridges.txt')
+
+Global $g_bTorConfig_AutoStart = (IniRead($CONFIG_INI, "startup", "auto_start", "false") = "true")
+Global $g_sTorConfig_AutoStartShortcut = IniRead($CONFIG_INI, "startup", "auto_start_shortcut", "")
 #EndRegion Read Configuration
 
 #EndRegion Variable Initialization
@@ -129,6 +133,11 @@ Func GUI_CreateMainWindow()
 	GUICtrlSetOnEvent(-1, "GUI_RegenerateTorrc")
 	Global $g_idMainGUI_MenuRefreshCircuit = GUICtrlCreateMenuItem("New Tor Circuit for future connections", $idMenuOptions)
 	GUICtrlSetOnEvent(-1, "GUI_RefreshCircuit")
+	GUICtrlCreateMenuItem("", $idMenuOptions)
+	Local $idMenuStartup = GUICtrlCreateMenu("Startup", $idMenuOptions)
+	Global $g_idMainGUI_MenuAutoStart = GUICtrlCreateMenuItem("Automatically start with Windows", $idMenuStartup)
+	GUICtrlSetOnEvent(-1, "GUI_AutoStart")
+	If $g_bTorConfig_AutoStart Then GUICtrlSetState(-1, $GUI_CHECKED)
 	GUICtrlCreateGroup("Proxy Details", 5, 5, 570, 117)
 	GUICtrlCreateLabel("Hostname:", 10, 27, 60, 15)
 	Global $g_idMainGUI_Hostname = GUICtrlCreateInput("localhost", 73, 22, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
@@ -335,6 +344,36 @@ Func GUI_RefreshCircuit()
 		GUI_LogOut('Failed to create clean circuits! ' & StringFormat('(Error Code: %i and Extended Code: %i)', @error, @extended))
 	Else
 		GUI_LogOut("Done!")
+	EndIf
+EndFunc
+
+Func GUI_AutoStart()
+	Local $iReturn
+	If $g_bTorConfig_AutoStart Then
+		$iReturn = FileDelete($g_sTorConfig_AutoStartShortcut)
+		If $iReturn = 0 Then
+			MsgBox($MB_ICONERROR, "Failed to remove startup", "Failed to remove shortcut in the Startup folder!")
+		Else
+			$g_bTorConfig_AutoStart = False
+			IniDelete($CONFIG_INI, "startup")
+			GUICtrlSetState($g_idMainGUI_MenuAutoStart, $GUI_UNCHECKED)
+			MsgBox($MB_ICONINFORMATION, "Successfully removed from startup", "ProxAllium will no longer start with Windows")
+		EndIf
+	Else
+		Local $sStartupFolder = _WinAPI_ShellGetKnownFolderPath($FOLDERID_Startup)
+		$sShortcutPath = $sStartupFolder & '\ProxAllium.lnk'
+		If FileExists($sShortcutPath) Then $sShortcutPath = _TempFile($sStartupFolder, "ProxAllium_", '.lnk')
+		$iReturn = FileCreateShortcut(@ScriptFullPath, $sShortcutPath)
+		If $iReturn = 0 Then
+			MsgBox($MB_ICONERROR, "Cannot add to startup", "Failed to create a shortcut in the Startup folder!")
+		Else
+			$g_bTorConfig_AutoStart = True
+			IniWrite($CONFIG_INI, "startup", "auto_start", "true")
+			$g_sTorConfig_AutoStartShortcut = $sShortcutPath
+			IniWrite($CONFIG_INI, "startup", "auto_start_shortcut", $sShortcutPath)
+			GUICtrlSetState($g_idMainGUI_MenuAutoStart, $GUI_CHECKED)
+			MsgBox($MB_ICONINFORMATION, "Successfully added to startup", "ProxAllium will start with Windows from now!")
+		EndIf
 	EndIf
 EndFunc
 
