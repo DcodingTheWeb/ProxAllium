@@ -471,7 +471,11 @@ Func Handle_OpenSockets(ByRef $aTorOutput)
 			Core_InitConnectionToController($g_sTorConfig_ControlPort)
 			$bControlInit = True
 	EndSwitch
-	Return ($bSocksInit And $bControlInit)
+	If $bSocksInit And $bControlInit Then
+		$bSocksInit = False
+		$bControlInit = False
+		Return True
+	EndIf
 EndFunc
 
 Func Handle_Bootstrap(ByRef $aTorOutput)
