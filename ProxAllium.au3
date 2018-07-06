@@ -48,6 +48,7 @@ Global $g_sTorGeoIPv6File = IniReadWrite($CONFIG_INI, "tor", "geoip6_file", 'Tor
 Global $g_iOutputPollInterval = Int(IniReadWrite($CONFIG_INI, "proxallium", "output_poll_interval", "100"))
 
 Global $g_sTorConfig_Port = IniReadWrite($CONFIG_INI, "tor_config", "port", "9050")
+Global $g_sTorConfig_TunnelPort = IniRead($CONFIG_INI, "tor_config", "tunnel_port", "")
 Global $g_sTorConfig_ControlPort = IniReadWrite($CONFIG_INI, "tor_config", "control_port", "9051")
 Global $g_sTorConfig_ControlPass = IniReadWrite($CONFIG_INI, "tor_config", "control_pass", String(Random(100000, 999999, 1)))
 Global $g_bTorConfig_OnlyLocalhost = (IniReadWrite($CONFIG_INI, "tor_config", "localhost_only", "true") = "true")
@@ -460,13 +461,15 @@ EndFunc
 Func Handle_OpenSockets(ByRef $aTorOutput)
 	If ($aTorOutput[0] < 9) Or ($aTorOutput[5] <> "Opening") Then Return
 	Local Enum $IP, $PORT
-	Local $aAddress = StringSplit($aTorOutput[9], ':', $STR_NOCOUNT)
+	Local $aAddress = StringSplit($aTorOutput[($aTorOutput[6] = "HTTP" ? 10 : 9)], ':', $STR_NOCOUNT)
 	Local Static $bSocksInit = False
 	Local Static $bControlInit = False
 	Switch $aTorOutput[6]
 		Case "Socks"
 			GUICtrlSetData($g_idMainGUI_Port, $aAddress[$PORT])
 			$bSocksInit = True
+		Case "HTTP"
+			_GUICtrlEdit_AppendText($g_idMainGUI_Port, ' (HTTP Tunnel Port: ' & $aAddress[$PORT] & ')')
 		Case "Control"
 			Core_InitConnectionToController($g_sTorConfig_ControlPort)
 			$bControlInit = True
@@ -530,6 +533,11 @@ Func Core_GenTorrc()
 	FileWriteLine($hTorrc, '## Open SOCKS proxy on the following port')
 	FileWriteLine($hTorrc, 'SOCKSPort ' & $g_sTorConfig_Port)
 	FileWriteLine($hTorrc, "")
+	If Not $g_sTorConfig_TunnelPort = "" Then
+		FileWriteLine($hTorrc, '## HTTP Tunnel Proxy')
+		FileWriteLine($hTorrc, "HTTPTunnelPort " & $g_sTorConfig_TunnelPort)
+		FileWriteLine($hTorrc, "")
+	EndIf
 	FileWriteLine($hTorrc, '## Open the Tor controller interface on the following port')
 	FileWriteLine($hTorrc, 'ControlPort ' & $g_sTorConfig_ControlPort)
 	FileWriteLine($hTorrc, 'HashedControlPassword ' & _Tor_GenHash($g_sTorConfig_ControlPass)[0])
