@@ -1,0 +1,139 @@
+= ProxAllium Configuration
+
+== Introduction
+
+This document will outline all of the available configuration options in ProxAllium. The defaults are pretty good so an average user can do without reading this, but advanced users may want to access one of the more advanced features and change the defaults to suit their needs.
+
+It goes without saying that you should know what you are doing, otherwise you may have unexpected consequences!
+
+== Config File
+
+ProxAllium uses a single `config.ini` file which is stored alongside the binary, it uses the reasonably simple https://en.wikipedia.org/wiki/INI_file#Format[INI] format to store your preferences.
+
+Don't worry about getting the format to follow the rules outlined in the wiki, AutoIt's INI parser is quite flexible and will be able to process your output as long it is readable by a human. Try taking the automatically generated key/value pairs as an example.
+
+== Options
+
+This part will describe all of the options/keys/properties a section might contain.
+
+=== `proxallium`
+
+|===
+|Key |Value |Default
+
+| `output_poll_interval`
+| The delay between checking for output from Tor in milliseconds
+| `100`
+
+|===
+
+=== `tor`
+
+|===
+|Key |Value |Default
+
+| `path`
+| Path to `tor.exe`
+| `Tor\tor.exe`
+
+| `config_file`
+| Path for the generated `torrc` file
+| `config.torrc`
+
+| `data_dir`
+| Path to the directory used by Tor to store data
+| `Tor Data`
+
+| `geoip4_file` and/or `geoip6_file`
+| Paths to the GeoIP files
+| `Tor\geoip` and/or `Tor\geoip6`
+
+|===
+
+=== `tor_config`
+
+|===
+|Key |Value |Default
+
+| `port`
+| Port for Tor's SOCKS5 proxy
+| `9050`
+
+| `tunnel_port`
+| Port for the HTTP tunnel proxy, use `auto` if you want Tor to pick the port
+| _None_
+
+| `control_port`
+| Port for Tor's controller, used to control Tor
+| `9051`
+
+| `control_pass`
+| Password for controller authentication
+| String of random 6 digit number 
+
+| `localhost_only`
+| Only allow proxy connection from your computer
+| `true`
+
+| `exit_node_country_code`
+| https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Current_codes[2-letter country code] of the exit node
+| _None_
+
+|===
+
+=== `proxy`
+
+IMPORTANT: These settings are for Tor to connect to the nodes, not for Tor's proxy!
+
+|===
+|Key |Value
+
+| `type`
+| Type of the proxy (`http` or `https` or `socks4` or `socks5`)
+
+| `host`
+| Address of the proxy's host (I.P or Name)
+
+| `port`
+| Port to connect at the host
+
+| `user`
+| (*Only for SOCKS5*) Username
+
+| `pass`
+| (*Only for SOCKS5*) Password
+
+|===
+
+=== `bridges`
+
+TIP: You can change these settings via GUI! Use `Options` -> `Bridges` option in the menu
+
+|===
+|Key |Value
+
+| `enabled`
+| `true` if enabled or `false` if not
+
+| `path`
+| Path to a text file with the bridge lines
+
+|===
+
+=== `startup`
+
+TIP: These settings can be interactively modified via GUI in the `Options` -> `Startup` menu!
+
+|===
+|Key |Value
+
+| `auto_start`
+| `true` if auto-start is enabled or `false` if not
+
+| `auto_start_shortcut`
+| (*DON'T MODIFY, INTERNAL USE ONLY*) Path of the startup shortcut
+
+| `start_minimized`
+| `true` if you want to start minimized or `false` if not
+
+|===
