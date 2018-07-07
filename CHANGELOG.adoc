@@ -7,6 +7,7 @@ Any changes listed here will be incorporated into the next future release
 * *ProxAllium now directly communicates with Tor*. This means Tor is handled properly and opens up more possibilities!
 * Support for bridges with pluggable transports `obfs` (all versions) and `scramblesuit`, GUI included for configuration
 * Support for HTTP tunnel
+* Added documentation for all INI options
 * Added an option to start with Windows
 * Added an option to start minimized
 * Added an option to regenerate Tor configuration
