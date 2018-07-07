@@ -12,6 +12,8 @@ ProxAllium uses a single `config.ini` file which is stored alongside the binary,
 
 Don't worry about getting the format to follow the rules outlined in the wiki, AutoIt's INI parser is quite flexible and will be able to process your output as long it is readable by a human. Try taking the automatically generated key/value pairs as an example.
 
+NOTE: Don't forget to regenerate Tor configuration if you change anything which effects Tor!
+
 == Options
 
 This part will describe all of the options/keys/properties a section might contain.
