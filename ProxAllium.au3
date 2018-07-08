@@ -226,13 +226,6 @@ EndFunc
 #EndRegion GUI Functions
 
 #Region Main Script
-If Not FileExists($g_sTorConfigFile) Then
-	GUI_LogOut("Cannot find Tor configuration file, generating one now... ", False)
-	Core_GenTorrc()
-	If @error Then Core_WaitForExit("Failed to create configuration file!")
-	GUI_LogOut("Successfully generated Tor configuration file!")
-EndIf
-
 Tor_Initialize()
 If Not @error Then Tor_Start()
 
@@ -652,6 +645,12 @@ Func Tor_Initialize()
 		$g_aTorVersion = $aTorVersion
 		GUI_LogOut("Detected Tor version: " & $g_aTorVersion[$TOR_VERSION])
 		GUICtrlSetData($g_idMainGUI_TorVersion, $g_aTorVersion[$TOR_VERSION])
+		If Not FileExists($g_sTorConfigFile) Then
+			GUI_LogOut("Cannot find Tor configuration file, generating one now... ", False)
+			Core_GenTorrc()
+			If @error Then Core_WaitForExit("Failed to create configuration file!")
+			GUI_LogOut("Successfully generated Tor configuration file!")
+		EndIf
 		Return True
 	EndIf
 	GUICtrlSetData($g_idMainGUI_TorVersion, '...')
