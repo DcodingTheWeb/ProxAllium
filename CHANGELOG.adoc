@@ -1,7 +1,9 @@
 = Changelog
 
-== Changes in future versions
-Any changes listed here will be incorporated into the next future release
+== v0.4 (Luscious Last)
+(_Thanks to my dear friend TheSaint for suggesting the name for this release_)
+
+This will probably be the first and final stable release of ProxAllium written in AutoIt. I am planning to rewrite it in C so that it can take advantage of various thing which cannot be done in AutoIt. This was challenging to accomplish and I learned many new things about AutoIt and programming, it maybe a while before I start working on the cross-platform C version as I am busy with work and life these days. Thank you to everyone who has used ProxAllium!
 
 .Additions
 * *ProxAllium now directly communicates with Tor*. This means Tor is handled properly and opens up more possibilities!
