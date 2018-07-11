@@ -362,7 +362,7 @@ Func GUI_AutoStart()
 		Local $sStartupFolder = _WinAPI_ShellGetKnownFolderPath($FOLDERID_Startup)
 		$sShortcutPath = $sStartupFolder & '\ProxAllium.lnk'
 		If FileExists($sShortcutPath) Then $sShortcutPath = _TempFile($sStartupFolder, "ProxAllium_", '.lnk')
-		$iReturn = FileCreateShortcut(@ScriptFullPath, $sShortcutPath)
+		$iReturn = FileCreateShortcut(@ScriptFullPath, $sShortcutPath, @WorkingDir)
 		If $iReturn = 0 Then
 			MsgBox($MB_ICONERROR, "Cannot add to startup", "Failed to create a shortcut in the Startup folder!")
 		Else
