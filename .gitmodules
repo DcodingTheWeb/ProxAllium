@@ -1,0 +1,3 @@
+[submodule "liballium"]
+	path = allium
+	url = https://github.com/DcodingTheWeb/liballium
