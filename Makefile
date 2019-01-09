@@ -1,7 +1,13 @@
 program = proxallium
 compiler ?= gcc
-compiler_flags = -O2 -Wall -I.
+compiler_flags = -Wall -I.
 objects = allium.o
+
+ifdef DEBUG
+	compiler_flags += -g
+else
+	compiler_flags += -O2
+endif
 
 .PHONY: clean
 
