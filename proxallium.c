@@ -6,10 +6,10 @@
 #include "allium/allium.h"
 
 struct {
-	int port;
+	unsigned int port;
 	bool localhost_only;
 } options = {
-	9051,
+	9050,
 	true
 };
 
@@ -93,7 +93,7 @@ char *proxallium_gen_torrc() {
 	int string_size;
 	
 	// Socks Port
-	format_string = "SocksPort %i\n";
+	format_string = "SocksPort %u\n";
 	string_size = snprintf(NULL, 0, format_string, options.port);
 	char socks_port[string_size + 1];
 	snprintf(socks_port, string_size + 1, format_string, options.port);
