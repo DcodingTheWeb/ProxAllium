@@ -1,3 +1,5 @@
+#include <errno.h>
+#include <limits.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,13 +51,21 @@ int main(int argc, char *argv[]) {
 
 void process_cmdline_options(int argc, char *argv[]) {
 	struct option long_options[] = {
+		{"port", required_argument, NULL, 'p'},
 		{"help", no_argument, NULL, 'h'},
 		{"version", no_argument, NULL, 'v'},
 		{NULL, 0, NULL, 0}
 	};
 	int option;
-	while ((option = getopt_long(argc, argv, "hv", long_options, NULL)) != -1) {
+	while ((option = getopt_long(argc, argv, "p:hv", long_options, NULL)) != -1) {
 		switch (option) {
+			case 'p':
+				options.port = strtol(optarg, NULL, 0);
+				if (errno == ERANGE || options.port > UINT_MAX) {
+					printf("Port is out of range! Please use something between 0 and %u\n", UINT_MAX);
+					exit(EXIT_FAILURE);
+				}
+				break;
 			case 'h':
 			case '?':
 				print_help(option == '?', argv[0]);
@@ -79,6 +89,7 @@ void noreturn print_help(bool error, char *program_name) {
 	puts(
 		"\n"
 		"Options:\n"
+		"	-p, --port            Port for Tor's proxy to bind\n"
 		"	-h, --help            Show this help text\n"
 		"	-v, --version         Print the version\n"
 		"\n"
