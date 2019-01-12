@@ -59,12 +59,14 @@ void process_cmdline_options(int argc, char *argv[]) {
 	int option;
 	while ((option = getopt_long(argc, argv, "p:hv", long_options, NULL)) != -1) {
 		switch (option) {
+			long port;
 			case 'p':
-				options.port = strtol(optarg, NULL, 0);
-				if (errno == ERANGE || options.port > UINT_MAX) {
+				port = strtol(optarg, NULL, 0);
+				if (errno == ERANGE || port < 0 || port > UINT_MAX) {
 					printf("Port is out of range! Please use something between 0 and %u\n", UINT_MAX);
 					exit(EXIT_FAILURE);
 				}
+				options.port = port;
 				break;
 			case 'h':
 			case '?':
