@@ -7,6 +7,8 @@
 #include <string.h>
 #include "allium/allium.h"
 
+#include "log.h"
+
 struct {
 	unsigned int port;
 	bool localhost_only;
@@ -26,23 +28,23 @@ int main(int argc, char *argv[]) {
 	// Create a new instance of Tor
 	struct TorInstance *tor_instance = allium_new_instance("tor");
 	if (!tor_instance) {
-		puts("Failed to allocate a new instance of Tor!");
+		log_output("Failed to allocate a new instance of Tor!");
 		return EXIT_FAILURE;
 	}
 	
 	// Generate the tor config according to the options
 	char *config = proxallium_gen_torrc();
 	if (!config) {
-		puts("Failed to generate configuration for Tor!");
+		log_output("Failed to generate configuration for Tor!");
 		return EXIT_FAILURE;
 	}
 	
 	// Start Tor
 	if (!allium_start(tor_instance, config)) {
-		puts("Failed to start Tor!");
+		log_output("Failed to start Tor!");
 		return EXIT_FAILURE;
 	}
-	printf("Started Tor with PID %lu!\n", tor_instance->pid);
+	log_output("Started Tor with PID %lu!\n", tor_instance->pid);
 	
 	// Clean up and exit
 	free(tor_instance);
