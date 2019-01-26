@@ -1,12 +1,12 @@
 program = proxallium
 compiler ?= gcc
-compiler_flags = -Wall -I.
+compiler_flags = -Wall -Wpedantic -I.
 objects = allium.o
 
 ifdef DEBUG
-	compiler_flags += -g
+	compiler_flags += -Og -g
 else
-	compiler_flags += -O2
+	compiler_flags += -O3
 endif
 
 VERSION = dev
@@ -18,7 +18,7 @@ $(program): $(program).c $(objects)
 	$(compiler) $(compiler_flags) -DVERSION=\"$(VERSION)\ \(git-$(GIT_HASH)\)\" -o $(program) $(objects) $(program).c
 
 allium.o: allium/allium.c
-	$(compiler) -c "allium/allium.c"
+	$(compiler) $(compiler_flags) -c "allium/allium.c"
 
 clean:
 	-rm $(program)
