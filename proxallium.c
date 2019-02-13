@@ -21,12 +21,14 @@ void process_cmdline_options(int argc, char *argv[]);
 noreturn void print_help(bool error, char *program_name);
 char *proxallium_gen_torrc();
 
+struct TorInstance *tor_instance;
+
 int main(int argc, char *argv[]) {
 	// Process command-line arguments
 	process_cmdline_options(argc, argv);
 	
 	// Create a new instance of Tor
-	struct TorInstance *tor_instance = allium_new_instance("tor");
+	tor_instance = allium_new_instance("tor");
 	if (!tor_instance) {
 		log_output("Failed to allocate a new instance of Tor!");
 		return EXIT_FAILURE;
@@ -40,13 +42,22 @@ int main(int argc, char *argv[]) {
 	}
 	
 	// Start Tor
-	if (!allium_start(tor_instance, config)) {
+	if (!allium_start(tor_instance, config, NULL)) {
 		log_output("Failed to start Tor!");
-		return EXIT_FAILURE;
+		return false;
 	}
-	log_output("Started Tor with PID %lu!\n", tor_instance->pid);
+	
+	log_output("Started Tor with PID %lu!", tor_instance->pid);
+	
+	// Main event loop
+	char *output;
+	while ((output = allium_read_stdout_line(tor_instance))) {
+		log_output("%s", output);
+	}
+	log_output("\nFinished reading Tor's output! Tor exited with exit code %i.", allium_get_exit_code(tor_instance));
 	
 	// Clean up and exit
+	allium_clean(tor_instance);
 	free(tor_instance);
 	return EXIT_SUCCESS;
 }
