@@ -1,3 +1,5 @@
+#define __STDC_WANT_LIB_EXT1__
+
 #include <errno.h>
 #include <limits.h>
 #include <getopt.h>
@@ -17,9 +19,16 @@ struct {
 	true
 };
 
+
+struct OutputHandler {
+	bool (*function)(char *);
+	bool finished;
+};
+
 void process_cmdline_options(int argc, char *argv[]);
 noreturn void print_help(bool error, char *program_name);
 char *proxallium_gen_torrc();
+bool handler_bootstrap(char *line);
 
 struct TorInstance *tor_instance;
 
@@ -50,9 +59,17 @@ int main(int argc, char *argv[]) {
 	log_output("Started Tor with PID %lu!", tor_instance->pid);
 	
 	// Main event loop
+	struct OutputHandler handlers[] = {
+		{handler_bootstrap, false}
+	};
+	size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
+	
 	char *output;
 	while ((output = allium_read_stdout_line(tor_instance))) {
-		log_output("%s", output);
+		for (int handler = 0; handler < handlers_num; handler++) {
+			if (!handlers[handler].finished)
+			handlers[handler].finished = handlers[handler].function(output);
+		}
 	}
 	log_output("\nFinished reading Tor's output! Tor exited with exit code %i.", allium_get_exit_code(tor_instance));
 	
@@ -153,4 +170,51 @@ char *proxallium_gen_torrc() {
 	}
 	
 	return torrc;
+}
+
+bool handler_bootstrap(char *output) {
+	unsigned int percentage;
+	
+	char *compare_string, *message = NULL, *segment = output;
+	unsigned int segment_num = 0;
+	while (true) {
+		char *space = strchr(segment, ' ');
+		if (!space) return false;
+		size_t segment_len = space - segment;
+		++segment_num;
+		
+		switch (segment_num) {
+			case 5: // Identify if we are bootstrapping
+				compare_string = "Bootstrapped";
+				if (strncmp(segment, compare_string, strlen(compare_string)) != 0) return false;
+				message = segment;
+				break;
+			case 6: // Get the percentage
+				if (sscanf(segment, "%3u%%:", &percentage) == 0) return false;
+				break;
+		}
+		
+		// Check if we got all of the information we needed
+		if (segment_num == 6) break;
+		
+		// Proceed to the next segment of text
+		segment += segment_len + 1;
+		if (segment[0] == '\0') return false; // We have reached the end of output
+	}
+	
+	if (percentage == 0) log_output("Trying to establish a connection and build a circuit, please wait...");
+	log_output("%s", message);
+	if (percentage == 100) {
+		log_output(
+			"##################################################\n"
+			"# You can now connect to the Tor proxy hosted at:\n"
+			"# IP Address: 127.0.0.1\n"
+			"# Port      : %u\n"
+			"# Proxy Type: SOCKS5\n"
+			"##################################################"
+		, options.port);
+		return true;
+	}
+	
+	return false;
 }
