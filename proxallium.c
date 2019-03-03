@@ -10,6 +10,7 @@
 #include "allium/allium.h"
 
 #include "log.h"
+#include "utils.h"
 
 struct {
 	unsigned int port;
@@ -175,18 +176,18 @@ char *proxallium_gen_torrc() {
 bool handler_bootstrap(char *output) {
 	unsigned int percentage;
 	
-	char *compare_string, *message = NULL, *segment = output;
+	char *compare_string, *message, *segment = output;
+	size_t segment_len;
 	unsigned int segment_num = 0;
 	while (true) {
-		char *space = strchr(segment, ' ');
-		if (!space) return false;
-		size_t segment_len = space - segment;
-		++segment_num;
+		// Get the next segment of text
+		segment = segstr(segment, &segment_len, ' ', &segment_num);
+		if (!segment) return false;
 		
 		switch (segment_num) {
 			case 5: // Identify if we are bootstrapping
 				compare_string = "Bootstrapped";
-				if (strncmp(segment, compare_string, strlen(compare_string)) != 0) return false;
+				if (strncmp(segment, compare_string, segment_len) != 0) return false;
 				message = segment;
 				break;
 			case 6: // Get the percentage
@@ -196,10 +197,6 @@ bool handler_bootstrap(char *output) {
 		
 		// Check if we got all of the information we needed
 		if (segment_num == 6) break;
-		
-		// Proceed to the next segment of text
-		segment += segment_len + 1;
-		if (segment[0] == '\0') return false; // We have reached the end of output
 	}
 	
 	if (percentage == 0) log_output("Trying to establish a connection and build a circuit, please wait...");
