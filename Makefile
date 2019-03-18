@@ -1,6 +1,6 @@
 program = proxallium
 compiler ?= gcc
-compiler_flags = -Wall -Wno-maybe-uninitialized -Wpedantic -I.
+compiler_flags = -Wall -Wno-maybe-uninitialized -Wno-parentheses -Wpedantic -I.
 objects = allium.o
 
 ifdef DEBUG

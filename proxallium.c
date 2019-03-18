@@ -30,6 +30,7 @@ void process_cmdline_options(int argc, char *argv[]);
 noreturn void print_help(bool error, char *program_name);
 char *proxallium_gen_torrc();
 bool handler_bootstrap(char *line);
+bool handler_warnings_and_errors(char *line);
 
 struct TorInstance *tor_instance;
 
@@ -61,7 +62,8 @@ int main(int argc, char *argv[]) {
 	
 	// Main event loop
 	struct OutputHandler handlers[] = {
-		{handler_bootstrap, false}
+		{handler_bootstrap, false},
+		{handler_warnings_and_errors, false}
 	};
 	size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
 	
@@ -211,6 +213,29 @@ bool handler_bootstrap(char *output) {
 			"##################################################"
 		, options.port);
 		return true;
+	}
+	
+	return false;
+}
+
+bool handler_warnings_and_errors(char *output) {
+	char *segment = output;
+	size_t segment_len;
+	unsigned int segment_num = 0;
+	bool warning, error;
+	while (segment = segstr(segment, &segment_len, ' ', &segment_num)) {
+		if (segment_num == 4) {
+			// Check for warning or error
+			warning = segequstr(segment, segment_len, "[warn]");
+			error = warning ? false : segequstr(segment, segment_len, "[err]");
+			
+			// No warning and error
+			if (!warning && !error) break;
+		} else if (segment_num == 5) {
+			// Print the error or warning
+			log_output("%s: %s", warning ? "Warning" : "Error", segment);
+			break;
+		}
 	}
 	
 	return false;

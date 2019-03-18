@@ -50,4 +50,16 @@ char *segstr(const char *str, size_t *seg_len, char delim, unsigned int *seg_num
 	return (char *) str;
 }
 
+/// @brief Check a segment for equality with a string
+/// @author Jan Alexander Steffens (jan.steffens@gmail.com)
+/// @param seg        Segment to test for equality.
+/// @param seg_len    Length of the segment.
+/// @param str        String to match with the segment.
+/// @returns `true` if `str` is equal to `seg`, otherwise `false`.
+/// @remarks This function was made as a convenience alternative to `strncmp`.
+///          I would like to thank heftig from the ##c IRC channel at freenode for coming up with the code based on my concept!
+bool segequstr(char *seg, size_t seg_len, char *str) {
+	return strncmp(seg, str, seg_len) == 0 && str[seg_len] == '\0';
+}
+
 #endif
