@@ -60,15 +60,16 @@ int main(int argc, char *argv[]) {
 	
 	log_output("Started Tor with PID %lu!", tor_instance->pid);
 	
-	// Main event loop
+	// Read output and call handlers
 	struct OutputHandler handlers[] = {
 		{handler_bootstrap, false},
 		{handler_warnings_and_errors, false}
 	};
 	size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
 	
+	// Main event loop
 	char *output;
-	while ((output = allium_read_stdout_line(tor_instance))) {
+	while (output = allium_read_stdout_line(tor_instance)) {
 		for (int handler = 0; handler < handlers_num; handler++) {
 			if (!handlers[handler].finished)
 			handlers[handler].finished = handlers[handler].function(output);
