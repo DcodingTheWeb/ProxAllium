@@ -1,4 +1,2 @@
-# Binaries
-*.o
-proxallium
-proxallium.exe
+# Ignore the build directory
+build/
