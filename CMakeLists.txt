@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0)
 
 # Define the project and executable
 project(ProxAllium C)
-add_executable(proxallium proxallium.c)
+add_executable(proxallium proxallium.c log.c utils.c)
 
 # Set the version
 set(VERSION dev)
