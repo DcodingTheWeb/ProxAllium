@@ -28,7 +28,9 @@ struct OutputHandler {
 
 void process_cmdline_options(int argc, char *argv[]);
 noreturn void print_help(bool error, char *program_name);
+void proxallium_main(void);
 char *proxallium_gen_torrc();
+bool tor_start(void);
 bool handler_bootstrap(char *line);
 bool handler_warnings_and_errors(char *line);
 
@@ -38,44 +40,12 @@ int main(int argc, char *argv[]) {
 	// Process command-line arguments
 	process_cmdline_options(argc, argv);
 	
-	// Create a new instance of Tor
-	tor_instance = allium_new_instance("tor");
-	if (!tor_instance) {
-		log_output("Failed to allocate a new instance of Tor!");
-		return EXIT_FAILURE;
-	}
-	
-	// Generate the tor config according to the options
-	char *config = proxallium_gen_torrc();
-	if (!config) {
-		log_output("Failed to generate configuration for Tor!");
-		return EXIT_FAILURE;
-	}
 	
 	// Start Tor
-	if (!allium_start(tor_instance, config, NULL)) {
-		log_output("Failed to start Tor!");
-		return false;
-	}
+	tor_start();
 	
-	log_output("Started Tor with PID %lu!", tor_instance->pid);
-	
-	// Read output and call handlers
-	struct OutputHandler handlers[] = {
-		{handler_bootstrap, false},
-		{handler_warnings_and_errors, false}
-	};
-	size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
-	
-	// Main event loop
-	char *output;
-	while (output = allium_read_stdout_line(tor_instance)) {
-		for (int handler = 0; handler < handlers_num; handler++) {
-			if (!handlers[handler].finished)
-			handlers[handler].finished = handlers[handler].function(output);
-		}
-	}
-	log_output("\nFinished reading Tor's output! Tor exited with exit code %i.", allium_get_exit_code(tor_instance));
+	// Handle main loop
+	proxallium_main();
 	
 	// Clean up and exit
 	allium_clean(tor_instance);
@@ -134,6 +104,25 @@ void noreturn print_help(bool error, char *program_name) {
 	exit(error ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
+void proxallium_main() {
+	// Read output and call handlers
+	struct OutputHandler handlers[] = {
+		{handler_bootstrap, false},
+		{handler_warnings_and_errors, false}
+	};
+	size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
+	
+	// Main event loop
+	char *output;
+	while (output = allium_read_stdout_line(tor_instance)) {
+		for (int handler = 0; handler < handlers_num; handler++) {
+			if (!handlers[handler].finished)
+			handlers[handler].finished = handlers[handler].function(output);
+		}
+	}
+	log_output("\nFinished reading Tor's output! Tor exited with exit code %i.", allium_get_exit_code(tor_instance));
+}
+
 char *proxallium_gen_torrc() {
 	// Temp variables to store format strings and their sizes
 	char *format_string;
@@ -174,6 +163,30 @@ char *proxallium_gen_torrc() {
 	}
 	
 	return torrc;
+}
+
+bool tor_start() {
+	// Create a new instance of Tor
+	tor_instance = allium_new_instance("tor");
+	if (!tor_instance) {
+		log_output("Failed to allocate a new instance of Tor!");
+		return EXIT_FAILURE;
+	}
+	
+	// Generate the tor config according to the options
+	char *config = proxallium_gen_torrc();
+	if (!config) {
+		log_output("Failed to generate configuration for Tor!");
+		return EXIT_FAILURE;
+	}
+	
+	// Start Tor
+	if (!allium_start(tor_instance, config, NULL)) {
+		log_output("Failed to start Tor!");
+		return false;
+	}
+	
+	log_output("Started Tor with PID %lu!", tor_instance->pid);
 }
 
 bool handler_bootstrap(char *output) {
