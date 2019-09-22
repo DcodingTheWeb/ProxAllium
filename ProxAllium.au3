@@ -4,8 +4,8 @@
 #AutoIt3Wrapper_Icon=icon.ico
 #AutoIt3Wrapper_Outfile=Builds\ProxAllium.exe
 #AutoIt3Wrapper_Res_Description=ProxAllium - Tor Proxy Bundle
-#AutoIt3Wrapper_Res_Fileversion=0.4.0.0
-#AutoIt3Wrapper_Res_ProductVersion=0.4.0.0
+#AutoIt3Wrapper_Res_Fileversion=0.4.2.0
+#AutoIt3Wrapper_Res_ProductVersion=0.4.2.0
 #AutoIt3Wrapper_Res_LegalCopyright=Dcoding The Web
 #AutoIt3Wrapper_Run_Au3Stripper=y
 #Au3Stripper_Parameters=/sf /sv /mo /rm

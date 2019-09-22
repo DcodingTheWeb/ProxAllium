@@ -1,5 +1,18 @@
 = Changelog
 
+== v0.4.2 (Luscious Last)
+
+This is a maintainence release with some updates to how ProxAllium is packaged, I no longer wish to package Tor along with ProxAllium for various reasons, mainly that I was no longer using ProxAllium in Windows myself and it was getting harder to keep track of new Tor releases and push an updated package everytime.
+
+I understand that it has been a while since the last release, but many things have happened since. I now have a full-timeish job that keeps me busy and I have also switched to Linux as my main operating system a while ago. The good news is that I have been working on a cross-platform version of ProxAllium, the progress is slow due to myself not being very experienced at writing a program in C and interacting with the system on a lower level... and also my job takes most of my time.
+
+.Additions
+* A new interactive guide for setting up Tor
+* A new setting to define the path for obfs4 pluggable transport in the configuration file
+
+.Changes
+* Tor is no longer packaged along with ProxAllium
+
 == v0.4 (Luscious Last)
 (_Thanks to my dear friend TheSaint for suggesting the name for this release_)
 
