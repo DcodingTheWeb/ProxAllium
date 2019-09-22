@@ -75,7 +75,7 @@ This part will describe all of the options/keys/properties a section might conta
 
 | `control_pass`
 | Password for controller authentication
-| String of random 6 digit number 
+| String of random 6 digit number
 
 | `localhost_only`
 | Only allow proxy connection from your computer
