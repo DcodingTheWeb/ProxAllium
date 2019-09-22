@@ -38,6 +38,10 @@ This part will describe all of the options/keys/properties a section might conta
 | Path to `tor.exe`
 | `Tor\tor.exe`
 
+| `obfs4_path`
+| Path to `obfs4.exe` (pluggable transport for bridges)
+| `Tor\PluggableTransports\obfs4\obfs4proxy.exe`
+
 | `config_file`
 | Path for the generated `torrc` file
 | `config.torrc`

@@ -41,6 +41,7 @@ Global $g_aTorVersion[0]
 Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 
 Global $g_sTorPath = IniReadWrite($CONFIG_INI, "tor", "path", 'Tor\tor.exe')
+Global $g_sObfs4Path = IniReadWrite($CONFIG_INI, "tor", "obfs4_path", 'Tor\PluggableTransports\obfs4\obfs4proxy.exe')
 Global $g_sTorConfigFile = IniReadWrite($CONFIG_INI, "tor", "config_file", 'config.torrc')
 Global $g_sTorDataDirPath = IniReadWrite($CONFIG_INI, "tor", "data_dir", 'Tor Data')
 Global $g_sTorGeoIPv4File = IniReadWrite($CONFIG_INI, "tor", "geoip4_file", 'Tor\geoip')
@@ -592,7 +593,9 @@ Func Core_GenTorrc()
 	If $g_bTorConfig_BridgesEnabled Then
 		FileWriteLine($hTorrc, '## Bridges')
 		FileWriteLine($hTorrc, 'UseBridges 1')
-		FileWriteLine($hTorrc, 'ClientTransportPlugin obfs2,obfs3,obfs4,scramblesuit exec Tor\PluggableTransports\obfs4\obfs4proxy')
+		If FileExists($g_sObfs4Path) Then
+			FileWriteLine($hTorrc, 'ClientTransportPlugin obfs2,obfs3,obfs4,scramblesuit exec ' & $g_sObfs4Path)
+		EndIf
 		Local $aBridges = StringSplit(StringStripCR(GUICtrlRead($g_idBridgesEdit)), @LF)
 		For $iBridge = 1 To $aBridges[0]
 			If Not StringIsSpace($aBridges[$iBridge]) Then FileWriteLine($hTorrc, 'Bridge ' & $aBridges[$iBridge]) ; Skip blank lines
