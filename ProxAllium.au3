@@ -632,6 +632,75 @@ Func Core_InitConnectionToController($iPort)
 	Return True
 EndFunc
 
+Func Core_SetupTor()
+	Local $iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg
+	$iMsgBoxFlags = $MB_ICONINFORMATION + $MB_YESNO
+	$sMsgBoxTitle = "Setup Tor"
+	$sMsgBoxMsg = "It looks Tor is not configured properly in ProxAllium yet, most likely this is your first run. Do not worry, ProxAllium can guide you through the process!" & @CRLF
+	$sMsgBoxMsg &= @CRLF & "Do you want to continue with the setup process?"
+	If MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg) = $IDNO Then Return False
+
+	Local $bUseTB = False
+	$iMsgBoxFlags = $MB_ICONQUESTION + $MB_YESNO
+	$sMsgBoxMsg = "Do you have Tor Browser installed?"
+	If MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg) = $IDYES Then
+		$bUseTB = True
+	Else
+		$iMsgBoxFlags = $MB_ICONQUESTION + $MB_YESNO
+		$sMsgBoxMsg = "It is also possible to just use Tor, but I recommend installing the Tor Browser as it automatically updates your copy of Tor when you update the browser and it also adds support for bridges." & @CRLF
+		$sMsgBoxMsg &= @CRLF & 'Do you want to install Tor Browser and use Tor from it? Choose "No" to continue with only Tor.'
+		$bUseTB = MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg) = $IDYES
+		If $bUseTB Then MsgBox($MB_ICONINFORMATION, $sMsgBoxTitle, "Please download and install the latest version of Tor Browser and click OK to continue.")
+	EndIf
+
+	Local $sTorFolder, $bFoundTor = False
+	If $bUseTB Then
+		Do
+			$sTorFolder = FileSelectFolder("Please select the folder containing Tor Browser", "", 0, @DesktopDir & '\Tor Browser')
+			If @error Then Return False
+			$sTorFolder = $sTorFolder & '\Browser\TorBrowser\Tor'
+			If FileExists($sTorFolder & '\tor.exe') Then
+				$bFoundTor = True
+			EndIf
+			If Not $bFoundTor Then MsgBox($MB_ICONERROR, "Tor not found", 'Cannot find tor.exe in this folder, please try again and make sure you have selected the installation directory (and not the "Browser" folder inside it).')
+		Until $bFoundTor
+	Else
+		$iMsgBoxFlags = $MB_ICONQUESTION + $MB_YESNO
+		$sMsgBoxMsg = 'Do you want to download Tor? If you already have a copy of Tor in your computer, then choose "No".'
+		If MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg) = $IDYES Then
+			$iMsgBoxFlags = $MB_ICONINFORMATION
+			$sMsgBoxMsg = 'The URL (https://www.torproject.org/download/tor) for the page which contains the link to download the "Tor Expert Bundle" has been copied to your clipboard.' & @CRLF
+			$sMsgBoxMsg &= @CRLF & "Please download it and extract the files to a permanent location (a sub-folder in ProxAllium's folder should be perfect), Click OK when you are done."
+			ClipPut('https://www.torproject.org/download/tor')
+			MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg)
+		EndIf
+		Do
+			$sTorFolder = FileSelectFolder("Please select the folder containing Tor", "")
+			If @error Then Return False
+			If FileExists($sTorFolder & '\Tor\tor.exe') Then
+				$sTorFolder = $sTorFolder & '\Tor'
+				$bFoundTor = True
+			ElseIf FileExists($sTorFolder & '\tor.exe') Then
+				$bFoundTor = True
+			EndIf
+			If Not $bFoundTor Then MsgBox($MB_ICONERROR, "Tor not found", "Cannot find tor.exe in this folder, please make sure you have selected the right folder and try again.")
+		Until $bFoundTor
+	EndIf
+
+	If $bFoundTor Then
+		$g_sTorPath =  $sTorFolder & '\tor.exe'
+		IniWrite($CONFIG_INI, "tor", "path", $g_sTorPath)
+		If $bUseTB Then
+			Local $sObfs4 = $sTorFolder & '\PluggableTransports\obfs4proxy.exe'
+			If FileExists($sObfs4) Then
+				$g_sObfs4Path = $sObfs4
+				IniWrite($CONFIG_INI, "tor", "obfs4_path", $g_sObfs4Path)
+			EndIf
+		EndIf
+	EndIf
+	Return $bFoundTor
+EndFunc
+
 Func IsTorRunning()
 	Return ProcessExists($g_aTorProcess[$TOR_PROCESS_PID]) <> 0
 EndFunc
@@ -660,7 +729,10 @@ Func Tor_Initialize()
 	Switch $iError
 		Case $TOR_ERROR_GENERIC
 			GUI_LogOut("Cannot find Tor!")
-
+			If Core_SetupTor() Then
+				Local $vReturn = Tor_Initialize()
+				Return SetError(@error, 0, $vReturn)
+			EndIf
 		Case $TOR_ERROR_VERSION
 			GUI_LogOut("Unable to identify Tor's version!")
 	EndSwitch
