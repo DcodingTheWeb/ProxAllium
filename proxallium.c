@@ -29,6 +29,9 @@ struct OutputHandler {
 void process_cmdline_options(int argc, char *argv[]);
 noreturn void print_help(bool error, char *program_name);
 void proxallium_main(void);
+bool proxallium_gui_main(void);
+void proxallium_cleanup(void);
+void proxallium_process_line(char *line);
 char *proxallium_gen_torrc();
 bool tor_start(void);
 bool handler_bootstrap(char *line);
@@ -36,10 +39,16 @@ bool handler_warnings_and_errors(char *line);
 
 struct TorInstance *tor_instance;
 
+// Output handlers
+struct OutputHandler handlers[] = {
+	{handler_bootstrap, false},
+	{handler_warnings_and_errors, false}
+};
+size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
+
 int main(int argc, char *argv[]) {
 	// Process command-line arguments
 	process_cmdline_options(argc, argv);
-	
 	
 	// Start Tor
 	tor_start();
@@ -48,7 +57,6 @@ int main(int argc, char *argv[]) {
 	proxallium_main();
 	
 	// Clean up and exit
-	allium_clean(tor_instance);
 	free(tor_instance);
 	return EXIT_SUCCESS;
 }
@@ -105,22 +113,24 @@ void noreturn print_help(bool error, char *program_name) {
 }
 
 void proxallium_main() {
-	// Read output and call handlers
-	struct OutputHandler handlers[] = {
-		{handler_bootstrap, false},
-		{handler_warnings_and_errors, false}
-	};
-	size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
-	
 	// Main event loop
-	char *output;
-	while (output = allium_read_stdout_line(tor_instance)) {
-		for (int handler = 0; handler < handlers_num; handler++) {
-			if (!handlers[handler].finished)
-			handlers[handler].finished = handlers[handler].function(output);
-		}
+	char *line;
+	while (line = allium_read_stdout_line(tor_instance)) {
+		proxallium_process_line(line);
 	}
+	proxallium_cleanup();
+}
+
+void proxallium_cleanup() {
 	log_output("\nFinished reading Tor's output! Tor exited with exit code %i.", allium_get_exit_code(tor_instance));
+	allium_clean(tor_instance);
+}
+
+void proxallium_process_line(char *line) {
+	for (int handler = 0; handler < handlers_num; handler++) {
+		if (!handlers[handler].finished)
+		handlers[handler].finished = handlers[handler].function(line);
+	}
 }
 
 char *proxallium_gen_torrc() {
