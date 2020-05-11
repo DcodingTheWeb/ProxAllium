@@ -1,5 +1,5 @@
 = ProxAllium
 
-image:https://img.shields.io/badge/license-MIT-blue.svg[link="https://raw.githubusercontent.com/DcodingTheWeb/ProxAllium/master/LICENSE"] image:https://img.shields.io/github/issues/DcodingTheWeb/ProxAllium.svg[link="https://github.com/DcodingTheWeb/ProxAllium/issues"] image:https://img.shields.io/github/release/DcodingTheWeb/ProxAllium/all.svg[link="https://github.com/DcodingTheWeb/ProxAllium/releases"]
+image:https://img.shields.io/badge/license-MIT-blue.svg[link="https://raw.githubusercontent.com/DcodingTheWeb/ProxAllium/master/LICENSE"] image:https://img.shields.io/github/issues/DcodingTheWeb/ProxAllium.svg[link="https://github.com/DcodingTheWeb/ProxAllium/issues"] image:https://img.shields.io/github/release/DcodingTheWeb/ProxAllium/all.svg[link="https://github.com/DcodingTheWeb/ProxAllium/releases"] image:https://img.shields.io/badge/Chat-on%20Gitter-%2346BC99[alt=Chat on Gitter,link=https://gitter.im/ProxAllium/chat]
 
 Tor Proxy Bundle for Windows. ProxAllium is an open-source wrapper for Tor. Visit the https://proxallium.tuxfamily.org/[website] for more details, don't forget to check the https://proxallium.tuxfamily.org/screenshots[screenshots]!
