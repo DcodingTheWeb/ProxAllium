@@ -11,6 +11,7 @@
 
 #include "log.h"
 #include "utils.h"
+#include "interrupt.h"
 
 struct {
 	unsigned int port;
@@ -49,6 +50,9 @@ size_t handlers_num = sizeof handlers / sizeof(struct OutputHandler);
 int main(int argc, char *argv[]) {
 	// Process command-line arguments
 	process_cmdline_options(argc, argv);
+	
+	// Initialize interrupt catcher
+	init_interrupt_catcher();
 	
 	// Start Tor
 	tor_start();
@@ -113,10 +117,28 @@ void noreturn print_help(bool error, char *program_name) {
 }
 
 void proxallium_main() {
+	bool stopping = false;
+	
 	// Main event loop
-	char *line;
-	while (line = allium_read_stdout_line(tor_instance)) {
-		proxallium_process_line(line);
+	while (true) {
+		enum allium_status status = allium_get_status(tor_instance, 100);
+		if (status == DATA_AVAILABLE) {
+			char *line = allium_read_stdout_line(tor_instance);
+			proxallium_process_line(line);
+		} else if (interrupted || status == STOPPED) {
+			if (interrupted) {
+				if (!stopping) {
+					log_output("Caught signal, attempting to exiting cleanly...");
+					allium_stop(tor_instance);
+				} else {
+					log_output("Caught second signal, stopping by force!");
+					allium_kill(tor_instance);
+				}
+				interrupted = false;
+			} else if (status == STOPPED) {
+				break;
+			}
+		}
 	}
 	proxallium_cleanup();
 }
