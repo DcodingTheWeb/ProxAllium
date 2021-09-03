@@ -446,6 +446,7 @@ Func Handle_TorOutput()
 EndFunc
 
 Func Handle_WarningAndError(ByRef $aTorOutput)
+	If $aTorOutput[0] < 4 Then Return
 	If ($aTorOutput[4] = '[warn]') Or ($aTorOutput[3] = '[err]') Then
 		If $aTorOutput[5] = "Path" Then Return
 		GUI_LogOut(_ArrayToString($aTorOutput, ' ', 5))
