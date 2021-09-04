@@ -2,6 +2,9 @@
 
 == v0.4.3 (Luscious Last)
 
+.Additions
+* Added an option to run Tor setup manually
+
 .Fixes
 * An out-of-bounds bug in Tor output handling code
 

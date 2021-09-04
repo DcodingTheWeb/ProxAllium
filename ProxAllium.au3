@@ -144,6 +144,9 @@ Func GUI_CreateMainWindow()
 	Global $g_idMainGUI_MenuStartMinimized = GUICtrlCreateMenuItem("Start Minimized", $idMenuStartup)
 	If $g_bTorConfig_StartMinimized Then GUICtrlSetState(-1, $GUI_CHECKED)
 	GUICtrlSetOnEvent(-1, "GUI_StartMinimized")
+	GUICtrlCreateMenuItem("", $idMenuOptions)
+	Global $g_idMainGUI_MenuRunSetup = GUICtrlCreateMenuItem("Run Tor setup again", $idMenuOptions)
+	GUICtrlSetOnEvent(-1, "Core_SetupTor")
 	GUICtrlCreateGroup("Proxy Details", 5, 5, 570, 117)
 	GUICtrlCreateLabel("Hostname:", 10, 27, 60, 15)
 	Global $g_idMainGUI_Hostname = GUICtrlCreateInput("localhost", 73, 22, 497, 20, $ES_READONLY, $WS_EX_CLIENTEDGE)
@@ -633,12 +636,16 @@ Func Core_InitConnectionToController($iPort)
 	Return True
 EndFunc
 
-Func Core_SetupTor()
+Func Core_SetupTor($bIntro = True)
+	If Not IsDeclared("bIntro") = $DECLARED_LOCAL Then $bIntro = False
+
 	Local $iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg
 	$iMsgBoxFlags = $MB_ICONINFORMATION + $MB_YESNO
 	$sMsgBoxTitle = "Setup Tor"
-	$sMsgBoxMsg = "It looks Tor is not configured properly in ProxAllium yet, most likely this is your first run. Do not worry, ProxAllium can guide you through the process!" & @CRLF
-	$sMsgBoxMsg &= @CRLF & "Do you want to continue with the setup process?"
+	If $bIntro Then
+		$sMsgBoxMsg = "It looks Tor is not configured properly in ProxAllium yet, most likely this is your first run. Do not worry, ProxAllium can guide you through the process!" & @CRLF & @CRLF
+	EndIf
+	$sMsgBoxMsg &= "Do you want to continue with the setup process?"
 	If MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg) = $IDNO Then Return False
 
 	Local $bUseTB = False
@@ -699,6 +706,11 @@ Func Core_SetupTor()
 			EndIf
 		EndIf
 	EndIf
+
+	$iMsgBoxFlags = $MB_ICONINFORMATION
+	$sMsgBoxMsg = 'Setup process is complete!'
+	MsgBox($iMsgBoxFlags, $sMsgBoxTitle, $sMsgBoxMsg)
+
 	Return $bFoundTor
 EndFunc
 
