@@ -6,6 +6,9 @@
 * Added support for the Snowflake pluggable transport
 * Added an option to run Tor setup manually
 
+.Changes
+* Main window no longer hides when minimized, instead it hides when closed
+
 .Fixes
 * An out-of-bounds bug in Tor output handling code
 

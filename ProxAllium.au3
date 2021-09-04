@@ -121,8 +121,7 @@ GUI_CreateBridges()
 
 Func GUI_CreateMainWindow()
 	Global $g_hMainGUI = GUICreate("ProxAllium", 580, 370)
-	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_MainWindowExit", $g_hMainGUI)
-	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleMainWindow", $g_hMainGUI)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_ToggleMainWindow", $g_hMainGUI)
 	GUICtrlCreateMenu("ProxAllium")
 	GUICtrlSetState(-1, $GUI_DISABLE)
 	Local $idMenuView = GUICtrlCreateMenu("View")
@@ -198,7 +197,6 @@ Func GUI_CreateTorOutputWindow()
 	Local Const $eiGuiWidth = 580, $eiGuiHeight = 280
 	Global $g_hTorGUI = GUICreate("Tor Output", $eiGuiWidth, $eiGuiHeight, Default, Default, $WS_OVERLAPPEDWINDOW)
 	GUISetOnEvent($GUI_EVENT_CLOSE, "GUI_ToggleTorOutputWindow")
-	GUISetOnEvent($GUI_EVENT_MINIMIZE, "GUI_ToggleTorOutputWindow")
 	Global $g_idTorOutput = GUICtrlCreateEdit("", 0, 0, $eiGuiWidth, $eiGuiHeight, BitOR($ES_READONLY, $ES_MULTILINE, $WS_VSCROLL, $ES_AUTOVSCROLL))
 	Global $g_hTorOutput = GUICtrlGetHandle($g_idTorOutput) ; Get the handle of the Edit control for future use in the Tor Output Handler
 	GUICtrlSetFont($g_idTorOutput, 9, Default, Default, "Consolas")
