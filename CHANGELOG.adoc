@@ -1,5 +1,10 @@
 = Changelog
 
+== v0.4.3 (Luscious Last)
+
+.Fixes
+* An out-of-bounds bug in Tor output handling code
+
 == v0.4.2 (Luscious Last)
 
 This is a maintainence release with some updates to how ProxAllium is packaged, I no longer wish to package Tor along with ProxAllium for various reasons, mainly that I was no longer using ProxAllium in Windows myself and it was getting harder to keep track of new Tor releases and push an updated package everytime.
