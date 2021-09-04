@@ -42,6 +42,14 @@ This part will describe all of the options/keys/properties a section might conta
 | Path to `obfs4.exe` (pluggable transport for bridges)
 | `Tor\PluggableTransports\obfs4\obfs4proxy.exe`
 
+| `snowflake_path`
+| Path to Snowflake pluggable transport (bridge)
+| `Tor\PluggableTransports\obfs4\snowflake-client.exe`
+
+| `snowflake_args`
+| Arguments to the Snowflake client
+| Refer to the https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/tree/main/client[official docs] for up-to-date information
+
 | `config_file`
 | Path for the generated `torrc` file
 | `config.torrc`

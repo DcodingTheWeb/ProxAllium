@@ -3,6 +3,7 @@
 == v0.4.3 (Luscious Last)
 
 .Additions
+* Added support for the Snowflake pluggable transport
 * Added an option to run Tor setup manually
 
 .Fixes

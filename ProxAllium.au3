@@ -42,6 +42,8 @@ Global Const $CONFIG_INI = @ScriptDir & '\config.ini'
 
 Global $g_sTorPath = IniReadWrite($CONFIG_INI, "tor", "path", 'Tor\tor.exe')
 Global $g_sObfs4Path = IniReadWrite($CONFIG_INI, "tor", "obfs4_path", 'Tor\PluggableTransports\obfs4\obfs4proxy.exe')
+Global $g_sSnowflakePath = IniReadWrite($CONFIG_INI, "tor", "snowflake_path", 'Tor\PluggableTransports\snowflake-client.exe')
+Global $g_sSnowflakeArgs = IniReadWrite($CONFIG_INI, "tor", "snowflake_args", '-url=https://snowflake-broker.torproject.net.global.prod.fastly.net/ -front=cdn.sstatic.net -ice=stun:stun.voip.blackberry.com:3478,stun:stun.altar.com.pl:3478,stun:stun.antisip.com:3478,stun:stun.bluesip.net:3478,stun:stun.dus.net:3478,stun:stun.epygi.com:3478,stun:stun.sonetel.com:3478,stun:stun.sonetel.net:3478,stun:stun.stunprotocol.org:3478,stun:stun.uls.co.za:3478,stun:stun.voipgate.com:3478,stun:stun.voys.nl:3478')
 Global $g_sTorConfigFile = IniReadWrite($CONFIG_INI, "tor", "config_file", 'config.torrc')
 Global $g_sTorDataDirPath = IniReadWrite($CONFIG_INI, "tor", "data_dir", 'Tor Data')
 Global $g_sTorGeoIPv4File = IniReadWrite($CONFIG_INI, "tor", "geoip4_file", 'Tor\geoip')
@@ -600,9 +602,15 @@ Func Core_GenTorrc()
 		If FileExists($g_sObfs4Path) Then
 			FileWriteLine($hTorrc, 'ClientTransportPlugin obfs2,obfs3,obfs4,scramblesuit exec ' & $g_sObfs4Path)
 		EndIf
+		If FileExists($g_sSnowflakePath) Then
+			; https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/tree/main/client
+			FileWriteLine($hTorrc, 'ClientTransportPlugin snowflake exec ' & $g_sSnowflakePath & ' ' & $g_sSnowflakeArgs)
+		EndIf
 		Local $aBridges = StringSplit(StringStripCR(GUICtrlRead($g_idBridgesEdit)), @LF)
 		For $iBridge = 1 To $aBridges[0]
-			If Not StringIsSpace($aBridges[$iBridge]) Then FileWriteLine($hTorrc, 'Bridge ' & $aBridges[$iBridge]) ; Skip blank lines
+			If StringIsSpace($aBridges[$iBridge]) Then ContinueLoop ; Skip blank lines
+			If StringLeft($aBridges[$iBridge], 1) = '#' Then ContinueLoop ; Skip comments
+			FileWriteLine($hTorrc, 'Bridge ' & $aBridges[$iBridge])
 		Next
 		FileWriteLine($hTorrc, "")
 	EndIf
@@ -703,6 +711,22 @@ Func Core_SetupTor($bIntro = True)
 			If FileExists($sObfs4) Then
 				$g_sObfs4Path = $sObfs4
 				IniWrite($CONFIG_INI, "tor", "obfs4_path", $g_sObfs4Path)
+			EndIf
+			Local $sSnowflake = $sTorFolder & '\PluggableTransports\snowflake-client.exe'
+			If FileExists($sSnowflake) Then
+				$g_sSnowflakePath = $sSnowflake
+				IniWrite($CONFIG_INI, "tor", "snowflake_path", $g_sSnowflakePath)
+				IniWrite($CONFIG_INI, "tor", "snowflake_args", $g_sSnowflakeArgs)
+
+				Local $hBridges = FileOpen($g_sTorConfig_BridgesPath, $FO_APPEND + $FO_CREATEPATH)
+				If $hBridges <> -1 Then
+					FileWriteLine($hBridges, '# Uncomment the line below to use snowflake bridge transport')
+					FileWriteLine($hBridges, '# snowflake 192.0.2.3:1')
+					FileClose($hBridges)
+
+					GUIDelete($g_hBridgesGUI)
+					GUI_CreateBridges()
+				EndIf
 			EndIf
 		EndIf
 	EndIf
