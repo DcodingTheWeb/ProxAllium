@@ -2,6 +2,10 @@
 
 == v0.4.3 (Luscious Last)
 
+A minor release to add support for Snowflake bridges and to fix a fatal bug which could crash ProxAllium, as well as a few other quality of life improvements.
+
+You can now obtain ProxAllium via https://community.chocolatey.org/packages/proxallium[Chocolately], a package manager for Windows. It's maintained by https://github.com/Cossey[Stewart Cossey] (big thanks!).
+
 .Additions
 * Added support for the Snowflake pluggable transport
 * Added an option to run Tor setup manually
